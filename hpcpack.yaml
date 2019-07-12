@@ -1,0 +1,990 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: HPC Pack REST API 2016
+  description: This is the API spec for Microsoft HPC Pack 2016 Update 3.
+  contact:
+    email: hpcpack@microsoft.com
+
+consumes:
+  - application/json
+produces:
+  - application/json
+  - application/xml
+
+basePath: /hpc
+schemes:
+  - https
+
+paths:
+  /cluster/version:
+    get:
+      summary: Get HPC Pack Version
+      description: Get the version of Microsoft HPC Pack installed on the HPC cluster that hosts the web service.
+      operationId: getClusterVersion
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return the installed HPC Pack version.
+          schema:
+            type: string
+            example: "5.3.6420.0"
+
+  /cluster/activeHeadNode:
+    get:
+      summary: Get Active Head Node Name
+      description: Get the name of the active head node of the HPC Pack cluster.
+      operationId: getClusterActiveHeadNode
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return the active head node name.
+          schema:
+            type: string
+            example: "headnode"
+            
+  /cluster/info/dateTimeFormat:
+    get:
+      summary: Get DateTime Format
+      description: Get DateTime format for the DateTime objects returned in the API
+      operationId: getClusterDateTimeFormat
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return the DateTime format.
+          schema:
+            type: string
+            example: "M/d/yyyy h:mm:ss tt"
+
+  /nodes:
+    get:
+      summary: Get Node List
+      description: Get the values of the specified properties for all of the nodes in an HPC cluster.
+      operationId: getNodes
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: query
+          name: properties
+          type: string
+          description: A comma-separated list of the names for the properties of the nodes for which you want to get values. If you do not specify the Properties parameter, the response contains values for all of the available properties of the nodes.
+          x-ms-parameter-location: method
+        - in: query
+          name: $filter
+          type: string
+          description: Filter result by specified filters. A filter is in the form of "{name}20eq%20{value}". Now the only available filter is NodeState.
+          x-ms-parameter-location: method
+        - in: query
+          name: sortNodesBy
+          type: string
+          description: A node property by which nodes will be sorted. If this parameter is not specified or a property with a specified name does not exist for a node, the result will be sorted by node Id.
+          default: Id
+          x-ms-parameter-location: method
+        - $ref: "#/parameters/rowsPerRead"
+        - $ref: "#/parameters/queryId"
+      responses:
+        200:
+          description: Return a list of nodes.
+          headers:
+            x-ms-continuation-queryId:
+              type: string
+              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestObject'
+          examples:
+            application/json:
+              - Properties:
+                  - Name: Id
+                    Value: '1'
+                  - Name: Name
+                    Value: WIN2016
+                  - Name: State
+                    Value: Online
+                  - Name: Availability
+                    Value: AlwaysOn
+                  - Name: Location
+                    Value: OnPremise
+                  - Name: OnlineTime
+                    Value: '7/5/2019 9:05:07 AM'
+
+  /nodes/{name}:
+    get:
+      summary: Get Node by Name
+      description: Get the values of all of the properties for the specified node.
+      operationId: getNodeByName
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: path
+          name: name
+          type: string
+          description: Node name.
+          required: true
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all properties of the node.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+  
+  /nodes/groups:
+    get:
+      summary: Get Node Group List
+      description: Get the names and descriptions for all of the node groups for the HPC cluster.
+      operationId: getNodeGroups
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return a list of node groups.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestObject'
+          examples:
+            application/json:
+              - Properties:
+                  - Name: Name
+                    Value: HeadNodes
+                  - Name: Description
+                    Value: The head nodes in the cluster
+              - Properties:
+                  - Name: Name
+                    Value: ComputeNodes
+                  - Name: Description
+                    Value: The compute nodes in the cluster
+              - Properties:
+                  - Name: Name
+                    Value: WCFBrokerNodes
+                  - Name: Description
+                    Value: The broker nodes in the cluster
+
+  /nodes/groups/{name}:
+    get:
+      summary: Get Node Group Members
+      description: Get the list of the nodes that belong to the specified node group.
+      operationId: getNodeGroupMembers
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: path
+          name: name
+          type: string
+          description: Node group name.
+          required: true
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return a name list of nodes which belong to the node group.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            application/json:
+              - CN001
+              - CN002
+              - CN003
+
+  /jobs:
+    parameters:
+      - $ref: '#/parameters/asUser'
+    get:
+      summary: Get Job List
+      description: Gets all/filtered jobs for the HPC cluster.
+      operationId: getJobs
+      parameters:
+        - in: query
+          name: properties
+          type: string
+          description: A comma-separated list of the names for the properties of the jobs for which you want to get values.
+          default: Id,Owner,Name,State,Priority
+          x-ms-parameter-location: method
+        - in: query
+          name: owner
+          type: string
+          description: The user who created, submitted, or queued the job.
+          x-ms-parameter-location: method
+        - in: query
+          name: $filter
+          type: string
+          description: Filter jobs by specified filters. A filter is in the form of "{name}20eq%20{value}", and multiple filters can be ANDed like "{filter1}%20and%20{filter2}…". Available filter names are JobState, NodeGroup and ChangeTimeFrom.
+          x-ms-parameter-location: method
+        - in: query
+          name: sortJobsBy
+          type: string
+          description: A job property by which jobs will be sorted. If this parameter is not specified or a property with a specified name does not exist for a job, the result will be sorted by job Id.
+          default: Id
+          x-ms-parameter-location: method
+        - $ref: "#/parameters/rowsPerRead"
+        - $ref: "#/parameters/queryId"
+      responses:
+        200:
+          description: Return a list of jobs.
+          headers:
+            x-ms-continuation-queryId:
+              type: string
+              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestObject'
+          examples:
+            application/json:
+              - Properties:
+                  - Name: Id
+                    Value: '14'
+                  - Name: Owner
+                    Value: HPC\hpcadmin
+                  - Name: State
+                    Value: Finished
+              - Properties:
+                  - Name: Id
+                    Value: '11'
+                  - Name: Owner
+                    Value: HPC\hpcadmin
+                  - Name: State
+                    Value: Finished
+    post:
+      summary: Create Job
+      description: Creates a new job on the HPC cluster.
+      operationId: createJob
+      parameters:
+        - in: body
+          name: properties
+          description: Properties of job to create
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: The newly created job id is returned.
+          schema:
+            type: integer
+          examples:
+            application/json:
+              19
+
+  /jobs/jobFile:
+    post:
+      summary: Create Job From XML
+      description: Create a new job on the HPC cluster by using the information in the specified job XML string.
+      operationId: createJobFromXml
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: body
+          name: xml
+          description: Job properties in XML
+          schema:
+            type: string
+      responses:
+        200:
+          description: The newly created job id is returned.
+          schema:
+            type: integer
+          examples:
+            application/json:
+              19
+
+  /jobs/{jobId}:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    get:
+      summary: Get Job
+      description: Get information about the specified job.
+      operationId: getJob
+      parameters:
+        - in: query
+          name: properties
+          type: string
+          description: A comma-separated list of the names for the properties of the job for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the job.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all/specified properties of the job.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          examples:
+            application/json:
+              - Name: Id
+                Value: '14'
+              - Name: Name
+                Value: My Task
+              - Name: Owner
+                Value: HPC\hpcadmin
+              - Name: State
+                Value: Finished
+    put:
+      summary: Set Job Properties
+      description: Set the values for the properties of the specified job.
+      operationId: setJobProperties
+      parameters:
+        - in: body
+          name: properties
+          description: Properties of job to set
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/customProperties:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    get:
+      summary: Get Job Custom Properties
+      description: Get the values of the specified custom properties for the job, or the values of all of the properties if none are specified.
+      operationId: getJobCustomProperties
+      parameters:
+        - in: query
+          name: names
+          type: string
+          description: A comma-separated list of the names for the custom properties of the job for which you want to get values. If you do not specify the Names parameter, the response contains values for all of the custom properties for the job.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all/specified custom properties of the job.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          examples:
+            application/json:
+              - Name: c1
+                Value: v1
+              - Name: c2
+                Value: v2
+    post:
+      summary: Set Job Custom Properties
+      description: Set the values of custom properties for a job.
+      operationId: setJobCustomProperties
+      parameters:
+        - in: body
+          name: properties
+          description: Custom properties for the job
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/envVariables:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    get:
+      summary: Get Job Environment Variables
+      description: Get the values of the specified environment variables for the job, or the values of all of the environment variables if none are specified.
+      operationId: getJobEnvironmentVariables
+      parameters:
+        - in: query
+          name: names
+          type: string
+          description: A comma-separated list of the names for the environment variables in the job for which you want to get values. If you do not specify the Names parameter, the response contains values for all of the environment variables for the job. If an environment variable with a specified name does not exist for the job, the response contains an empty string for the value of that environment variable.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all/specified environment variables of the job.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          examples:
+            application/json:
+              - Name: c1
+                Value: v1
+              - Name: c2
+                Value: v2
+    post:
+      summary: Set Job Environment Variables
+      description: Sets the values of environment variables for a job.
+      operationId: setJobEnvironmentVariables
+      parameters:
+        - in: body
+          name: properties
+          description: Environment variables for the job
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/submit:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    post:
+      summary: Submit Job
+      description: Submit a job to the HPC Job Scheduler Service so that the HPC Job Scheduler Service can add the job to the queue of jobs to run. If the credentials for the account under which the job should run are not cached on the server, you can set them in the UserName and Password properties. A job that is submitted by this operation is not validated. After the job is submitted, you can get information about the job by using the Get Job operation.
+      operationId: submitJob
+      parameters:
+        - in: body
+          name: properties
+          description: Properties of job to submit
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/cancel:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    post:
+      summary: Cancel Job
+      description: Cancel the specified job.
+      operationId: cancelJob
+      parameters:
+        - in: query
+          name: forced
+          type: boolean
+          description: Specifies whether to stop the job immediately without using the grace period for canceling the tasks in the job and without running the node release task, if the job contains one. True indicates that the job should stop immediately without using the grace period for canceling the tasks in the job and without running the node release task. False indicates that the job should not stop immediately and should use the grace period for canceling the tasks in the job and run the node release task.
+          default: false
+          x-ms-parameter-location: method
+        - $ref: '#/parameters/message'
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/finish:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    post:
+      summary: Finish Job
+      description: Finish the specified job. It's silimar to canceling a job, but sets the job state to "Finished" rather than "Canceled".
+      operationId: finishJob
+      parameters:
+        - $ref: '#/parameters/message'
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/requeue:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    post:
+      summary: Requeue Job
+      description: Resubmit the specified job to the queue.
+      operationId: requeueJob
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+    get:
+      summary: Get Task List
+      description: Get the values of the properties for all of the tasks in the specified job.
+      operationId: getTasks
+      parameters:
+        - in: query
+          name: properties
+          type: string
+          description: A comma-separated list of the names for the properties of the tasks for which you want to get values.
+          default: TaskId,Name,State,CommandLine,ExitCode,ParentJobId,JobTaskId,InstanceId
+          x-ms-parameter-location: method
+        - in: query
+          name: expandParametric
+          type: boolean
+          description: Specifies whether to get properties only for the master task for a parametric sweep task, or for all of the subtasks instead. True indicates that you want to get properties for all of the subtasks. False indicates that you want to get properties only for the master task.
+          default: true
+          x-ms-parameter-location: method
+        - in: query
+          name: $filter
+          type: string
+          description: Filter tasks by specified filters. A filter is in the form of "{name}20eq%20{value}", and multiple filters can be ANDed like "{filter1}%20and%20{filter2}…". Available filter names are TaskState, ChangeTimeFrom, TaskStates, TaskIds and TaskInstanceIds.
+          x-ms-parameter-location: method
+        - in: query
+          name: sortTasksBy
+          type: string
+          description:  A task property by which tasks will be sorted. If this parameter is not specified or a property with a specified name does not exist for a task, the result will be sorted by task Id.
+          default: TaskId
+          x-ms-parameter-location: method
+        - $ref: "#/parameters/rowsPerRead"
+        - $ref: "#/parameters/queryId"
+      responses:
+        200:
+          description: Return a list of tasks of the job.
+          headers:
+            x-ms-continuation-queryId:
+              type: string
+              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestObject'
+          examples:
+            application/json:
+              - Properties:
+                  - Name: TaskId
+                    Value: 22.1.1
+                  - Name: Name
+                    Value: My Sweep Task
+                  - Name: State
+                    Value: Finished
+                  - Name: CommandLine
+                    Value: echo 1
+                  - Name: ExitCode
+                    Value: '0'
+                  - Name: ParentJobId
+                    Value: '22'
+                  - Name: JobTaskId
+                    Value: '1'
+                  - Name: InstanceId
+                    Value: '1'
+              - Properties:
+                  - Name: TaskId
+                    Value: 22.1.2
+                  - Name: Name
+                    Value: My Sweep Task
+                  - Name: State
+                    Value: Finished
+                  - Name: CommandLine
+                    Value: echo 2
+                  - Name: ExitCode
+                    Value: '0'
+                  - Name: ParentJobId
+                    Value: '22'
+                  - Name: JobTaskId
+                    Value: '1'
+                  - Name: InstanceId
+                    Value: '2'
+    post:
+      summary: Add Task
+      description: Add a task to a job.
+      operationId: addTask
+      parameters:
+        - in: body
+          name: properties
+          description: Properties of task to add. 
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: The newly created task id is returned.
+          schema:
+            type: integer
+          examples:
+            application/json:
+              1
+
+  /jobs/{jobId}/tasks/{taskId}:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+    get:
+      summary: Get Task
+      description: Get the values of the specified properties for the specified task, or the values of all of the properties if no properties are specified.
+      operationId: getTask
+      parameters:
+        - in: query
+          name: properties
+          type: string
+          description: A comma-separated list of the names for the properties of the task for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the task.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all/specified properties of the task.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          examples:
+            application/json:
+              - Name: TaskId
+                Value: '37.3'
+              - Name: JobTaskId
+                Value: '3'
+              - Name: InstanceId
+                Value: '0'
+              - Name: State
+                Value: Finished
+              - Name: CommandLine
+                Value: time /t
+    put:
+      summary: Set Task Properties
+      description: Set the values of properties for a task in a job.
+      operationId: setTaskProperties
+      parameters:
+        - in: body
+          name: properties
+          description: Properties of task to set. 
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks/{taskId}/customProperties:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+    get:
+      summary: Get Task Custom Properties
+      description: Get the values of the specified custom properties for the task, or the values of all of the properties if none are specified.
+      operationId: getTaskCustomProperties
+      parameters:
+        - in: query
+          name: names
+          type: string
+          description: A comma-separated list of the names for the custom properties of the task for which you want to get values. If you do not specify the Names parameter, the response contains values for all of the custom properties for the task.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all/specified custom properties of the task.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          examples:
+            application/json:
+              - Name: c1
+                Value: v1
+              - Name: c2
+                Value: v2
+    post:
+      summary: Set Task Custom Properties
+      description: Set the values of custom properties for a task.
+      operationId: setTaskCustomProperties
+      parameters:
+        - in: body
+          name: properties
+          description: Custom properties for the task
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks/{taskId}/envVariables:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+    get:
+      summary: Get Task Environment Variables
+      description: Get the values of the specified environment variables for the task, or the values of all of the environment variables if none are specified.
+      operationId: getTaskEnvironmentVariables
+      parameters:
+        - in: query
+          name: names
+          type: string
+          description: A comma-separated list of the names for the environment variables in the task for which you want to get values. If you do not specify the Names parameter, the response contains values for all of the environment variables for the task. If an environment variable with a specified name does not exist for the task, the response contains an empty string for the value of that environment variable.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all/specified environment variables of the task.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          examples:
+            application/json:
+              - Name: c1
+                Value: v1
+              - Name: c2
+                Value: v2
+    post:
+      summary: Set Task Environment Variables
+      description: Set the value of one or more environment variables for a task.
+      operationId: setTaskEnvironmentVariables
+      parameters:
+        - in: body
+          name: properties
+          description: Environment variables for the task
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks/{taskId}/cancel:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+    post:
+      summary: Cancel Task
+      description: Cancel the specified task.
+      operationId: cancelTask
+      parameters:
+        - in: query
+          name: forced
+          type: boolean
+          description: Specifies whether to stop the task immediately without using the grace period for canceling a task. True indicates that the task should stop immediately without using the grace period for canceling a task. False indicates that the task should use the grace period for canceling a task.
+          default: false
+          x-ms-parameter-location: method
+        - $ref: '#/parameters/message'
+      responses:
+        204:
+          description: OK
+    
+  /jobs/{jobId}/tasks/{taskId}/finish:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+    post:
+      summary: Finish Task
+      description: Finish the specified task. It's silimar to canceling a task, but sets the task state to "Finished" rather than "Canceled".
+      operationId: finishTask
+      parameters:
+        - $ref: '#/parameters/message'
+      responses:
+        204:
+          description: OK
+    
+  /jobs/{jobId}/tasks/{taskId}/requeue:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+    post:
+      summary: Requeue Task
+      description: Move a failed, canceled, or queued task to the configuring state so that the task can be queued again when the job is resubmitted.
+      operationId: requeueTask
+      parameters:
+        - $ref: '#/parameters/message'
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks/{taskId}/subtasks/{subtaskId}:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+      - $ref: '#/parameters/subtaskId'
+    get:
+      summary: Get Subtask
+      description: Get the values of the specified properties for the specified subtask, or the values of all of the properties if no properties are specified. Only Parameteric Sweep job have subtasks.
+      operationId: getSubtask
+      parameters:
+        - in: query
+          name: properties
+          type: string
+          description: A comma-separated list of the names for the properties of the subtask for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the subtask.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return all/specified properties of the subtask.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          examples:
+            application/json:
+              - Name: JobTaskId
+                Value: '1'
+              - Name: TaskId
+                Value: 22.1.3
+              - Name: InstanceId
+                Value: '3'
+              - Name: CommandLine
+                Value: echo 3
+    put:
+      summary: Set Subtask Properties
+      description: Set the values of properties for a subtask in a job.
+      operationId: setSubtaskProperties
+      parameters:
+        - in: body
+          name: properties
+          description: Properties of subtask to set. 
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RestProperty'
+          x-ms-parameter-location: method
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks/{taskId}/subtasks/{subtaskId}/cancel:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+      - $ref: '#/parameters/subtaskId'
+    post:
+      summary: Cancel Subtask
+      description: Cancel the specified subtask.
+      operationId: cancelSubtask
+      parameters:
+        - in: query
+          name: forced
+          type: boolean
+          description: Specifies whether to stop the subtask immediately without using the grace period for canceling a task. True indicates that the subtask should stop immediately without using the grace period for canceling a task. False indicates that the subtask should use the grace period for canceling.
+          default: false
+          x-ms-parameter-location: method
+        - $ref: '#/parameters/message'
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks/{taskId}/subtasks/{subtaskId}/finish:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+      - $ref: '#/parameters/subtaskId'
+    post:
+      summary: Finish Subtask
+      description: Finish the specified subtask.
+      operationId: finishSubtask
+      parameters:
+        - $ref: '#/parameters/message'
+      responses:
+        204:
+          description: OK
+
+  /jobs/{jobId}/tasks/{taskId}/subtasks/{subtaskId}/requeue:
+    parameters:
+      - $ref: '#/parameters/asUser'
+      - $ref: '#/parameters/jobId'
+      - $ref: '#/parameters/taskId'
+      - $ref: '#/parameters/subtaskId'
+    post:
+      summary: Requeue Subtask
+      description: Move a failed, canceled, or queued subtask to the configuring state so that the subtask can be queued again when the job is resubmitted.
+      operationId: requeueSubtask
+      responses:
+        204:
+          description: OK
+
+  /jobs/templates:
+    get:
+      summary: Get Job Templates
+      description: Get a list of the names of the job templates that are available on the HPC cluster.
+      operationId: getJobTemplates
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return a list of template names.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            application/json:
+              - Default
+
+parameters:
+  asUser:
+    in: header
+    name: x-ms-as-user
+    type: string
+    description: The name of user whom you want to make request as. You must be an HPC Pack administrator or HPC Pack Job administrator to make it work.
+    x-ms-parameter-location: method
+    
+  jobId:
+    in: path
+    name: jobId
+    type: integer
+    description: Job Id
+    required: true
+    x-ms-parameter-location: method
+
+  taskId:
+    in: path
+    name: taskId
+    type: integer
+    description: Task Id
+    required: true
+    x-ms-parameter-location: method
+
+  subtaskId:
+    in: path
+    name: subtaskId
+    type: integer
+    description: Subtask Id
+    required: true
+    x-ms-parameter-location: method
+
+  rowsPerRead:
+    in: query
+    name: rowsPerRead
+    type: integer
+    description: Specifies how many rows of data to retrieve each time.
+    default: 10
+    x-ms-parameter-location: method
+
+  queryId:
+    in: query
+    name: queryId
+    type: string
+    description: The value of the x-ms-continuation-queryId header from the previouse response of this operation, used for reading the next page of data.
+    x-ms-parameter-location: method
+
+  message:
+    in: body
+    name: message
+    schema:
+      type: string
+    description: A message for the operation.
+    x-ms-parameter-location: method
+
+definitions:
+  RestObject:
+    type: object
+    properties:
+      properties:
+        type: array
+        items:
+          $ref: '#/definitions/RestProperty'
+
+  RestProperty:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+
+securityDefinitions:
+  basic:
+    type: basic
+
+security:
+  - basic: []
