@@ -1,0 +1,25 @@
+#!/bin/bash
+
+cwd="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+_=${swagger2markup_cli:?Environment variable swagger2markup_cli must be set to the path of the JAR file.}
+
+input_file=${1:?Input file must be specified.}
+output_file=${2:?Output file must be specified.}
+output_dir=$(dirname "$output_file")
+tmpdoc_noext="$output_dir/tmpdoc"
+tmpdoc="$tmpdoc_noext.md"
+tmptoc="$output_dir/tmptoc.md"
+toc="$output_dir/toc.md"
+
+if [ -a "$output_file" ]; then
+  rm -f "$output_file"
+fi
+
+java -jar "$swagger2markup_cli" convert -c "$cwd/config.properties" -i "$input_file" -f "$tmpdoc_noext" && \
+  cat "$tmpdoc" | gh-md-toc - >  "$tmptoc" && \
+  sed '/ \[Description\](/d' "$tmptoc" | sed '/ \[Parameters\](/d' | sed '/ \[Responses\](/d' | sed '/ \[Example HTTP response\](/d' | sed '/\[Response 200\](/d' | sed "s/^   //" > "$toc" && \
+  cat "$toc" >> "$output_file" && \
+  echo >> "$output_file" && \
+  cat "$tmpdoc" >> "$output_file" && \
+  rm "$tmpdoc" "$tmptoc" "$toc"
