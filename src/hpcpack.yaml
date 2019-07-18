@@ -215,7 +215,8 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter jobs by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are _JobState_, _NodeGroup_ and _ChangeTimeFrom_.
+          description: |
+            Filter jobs by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are _JobState_, _NodeGroup_ and _ChangeTimeFrom_.
           x-ms-parameter-location: method
         - in: query
           name: sortJobsBy
