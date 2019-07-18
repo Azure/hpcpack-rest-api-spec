@@ -286,7 +286,18 @@ paths:
         - $ref: '#/parameters/asUser'
         - in: body
           name: xml
-          description: Job properties in XML
+          description: |
+            A job described in XML. For an example:
+
+            ```xml
+            <Job>
+              <Tasks>
+                <Task CommandLine="hostname" MinCores="1" MaxCores="1" />
+              </Tasks>
+            </Job>
+            ```
+
+            Note that since the server accepts input in JSON, the XML has to be encoded in a JSON string.
           schema:
             type: string
       responses:
