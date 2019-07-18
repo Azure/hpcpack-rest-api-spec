@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cwd="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+build=$(basename "$cwd")
+src=src
+out=out/cs-client
+docker_image=${HPCPACK_CLI_BUILDER_IMG:=hpcpack-cli-builder}
+
+cd "$cwd/.."
+
+if [ ! -d "$out" ]; then
+  mkdir -p "$out"
+fi
+
+docker run --mount type=bind,source="$(pwd)",target=/app --rm "$docker_image" "./$build/make-cs-client" "./$src/hpcpack.yaml" "./$out"
