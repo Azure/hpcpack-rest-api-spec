@@ -3,13 +3,13 @@
 cwd="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 build=$(basename "$cwd")
 src=src
-out=out
+out=out/doc
 docker_image=${HPCPACK_DOC_BUILDER_IMG:=hpcpack-doc-builder}
 
 cd "$cwd/.."
 
 if [ ! -d "$out" ]; then
-  mkdir "$out"
+  mkdir -p "$out"
 fi
 
 docker run --mount type=bind,source="$(pwd)",target=/app --rm "$docker_image" "./$build/make-doc" "./$src/hpcpack.yaml" "./$out/README.md"
