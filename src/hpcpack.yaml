@@ -74,7 +74,8 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter result by specified filters. A filter is in the form of "{name}20eq%20{value}". Now the only available filter is NodeState.
+          description: |
+            Filter result by specified filters. A filter is in the form of "<name>20eq%20<value>". Now the only available filter is _NodeState_.
           x-ms-parameter-location: method
         - in: query
           name: sortNodesBy
@@ -90,7 +91,10 @@ paths:
           headers:
             x-ms-continuation-queryId:
               type: string
-              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+              description: |
+                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
+                
+                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
           schema:
             type: array
             items:
@@ -212,7 +216,8 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter jobs by specified filters. A filter is in the form of "{name}20eq%20{value}", and multiple filters can be ANDed like "{filter1}%20and%20{filter2}…". Available filter names are JobState, NodeGroup and ChangeTimeFrom.
+          description: |
+            Filter jobs by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are _JobState_, _NodeGroup_ and _ChangeTimeFrom_.
           x-ms-parameter-location: method
         - in: query
           name: sortJobsBy
@@ -228,7 +233,10 @@ paths:
           headers:
             x-ms-continuation-queryId:
               type: string
-              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+              description: |
+                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
+                
+                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
           schema:
             type: array
             items:
@@ -280,7 +288,18 @@ paths:
         - $ref: '#/parameters/asUser'
         - in: body
           name: xml
-          description: Job properties in XML
+          description: |
+            A job described in XML. For an example:
+
+            ```xml
+            <Job>
+              <Tasks>
+                <Task CommandLine="hostname" MinCores="1" MaxCores="1" />
+              </Tasks>
+            </Job>
+            ```
+
+            Note that since the server accepts input in JSON, the XML has to be encoded in a JSON string.
           schema:
             type: string
       responses:
@@ -519,7 +538,8 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter tasks by specified filters. A filter is in the form of "{name}20eq%20{value}", and multiple filters can be ANDed like "{filter1}%20and%20{filter2}…". Available filter names are TaskState, ChangeTimeFrom, TaskStates, TaskIds and TaskInstanceIds.
+          description: |
+            Filter tasks by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are _TaskState_, _ChangeTimeFrom_, _TaskStates_, _TaskIds_ and _TaskInstanceIds_.
           x-ms-parameter-location: method
         - in: query
           name: sortTasksBy
@@ -535,7 +555,10 @@ paths:
           headers:
             x-ms-continuation-queryId:
               type: string
-              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+              description: |
+                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
+                
+                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
           schema:
             type: array
             items:
@@ -954,7 +977,7 @@ parameters:
     in: query
     name: queryId
     type: string
-    description: The value of the x-ms-continuation-queryId header from the previouse response of this operation, used for reading the next page of data.
+    description: The value of the _x-ms-continuation-queryId_ header from the previouse response of this operation, used for reading the next page of data.
     x-ms-parameter-location: method
 
   message:
