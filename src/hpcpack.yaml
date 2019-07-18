@@ -74,7 +74,7 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter result by specified filters. A filter is in the form of "{name}20eq%20{value}". Now the only available filter is NodeState.
+          description: Filter result by specified filters. A filter is in the form of "<name>20eq%20<value>". Now the only available filter is "NodeState".
           x-ms-parameter-location: method
         - in: query
           name: sortNodesBy
@@ -90,7 +90,10 @@ paths:
           headers:
             x-ms-continuation-queryId:
               type: string
-              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+              description: |
+                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
+                
+                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
           schema:
             type: array
             items:
@@ -228,7 +231,10 @@ paths:
           headers:
             x-ms-continuation-queryId:
               type: string
-              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+              description: |
+                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
+                
+                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
           schema:
             type: array
             items:
@@ -535,7 +541,10 @@ paths:
           headers:
             x-ms-continuation-queryId:
               type: string
-              description: Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the queryId query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the queryId URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+              description: |
+                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
+                
+                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
           schema:
             type: array
             items:
