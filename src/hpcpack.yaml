@@ -74,7 +74,7 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter result by specified filters. A filter is in the form of "<name>20eq%20<value>". Now the only available filter is "NodeState".
+          description: Filter result by specified filters. A filter is in the form of "<name>20eq%20<value>". Now the only available filter is _NodeState_.
           x-ms-parameter-location: method
         - in: query
           name: sortNodesBy
@@ -215,7 +215,7 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter jobs by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are JobState, NodeGroup and ChangeTimeFrom.
+          description: Filter jobs by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are _JobState_, _NodeGroup_ and _ChangeTimeFrom_.
           x-ms-parameter-location: method
         - in: query
           name: sortJobsBy
@@ -525,7 +525,7 @@ paths:
         - in: query
           name: $filter
           type: string
-          description: Filter tasks by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are TaskState, ChangeTimeFrom, TaskStates, TaskIds and TaskInstanceIds.
+          description: Filter tasks by specified filters. A filter is in the form of "<name>20eq%20<value>", and multiple filters can be ANDed like "<filter1>%20and%20<filter2>…". Available filter names are _TaskState_, _ChangeTimeFrom_, _TaskStates_, _TaskIds_ and _TaskInstanceIds_.
           x-ms-parameter-location: method
         - in: query
           name: sortTasksBy
@@ -963,7 +963,7 @@ parameters:
     in: query
     name: queryId
     type: string
-    description: The value of the x-ms-continuation-queryId header from the previouse response of this operation, used for reading the next page of data.
+    description: The value of the _x-ms-continuation-queryId_ header from the previouse response of this operation, used for reading the next page of data.
     x-ms-parameter-location: method
 
   message:
