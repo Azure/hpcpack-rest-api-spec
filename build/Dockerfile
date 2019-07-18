@@ -11,5 +11,4 @@ RUN \
   curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -LO && chmod +x gh-md-toc
 ENV swagger2markup_cli=/opt/swagger2markup-cli-1.3.3.jar \
   PATH="/opt:$PATH"
-ADD ./make-doc ./config.properties /opt/
-ENTRYPOINT ["/opt/make-doc"]
+WORKDIR /app
