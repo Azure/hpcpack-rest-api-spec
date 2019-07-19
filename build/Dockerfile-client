@@ -3,9 +3,10 @@ RUN \
   apt-get update && \
   apt-get install -y curl
 
-# These are required indirectly by autorest. And they seem to be dependencies of .Net Core.
+# These are required indirectly by autorest. And they seem to be dependencies of .Net Core,
+# which are required by the C# generator.
 RUN \
-  apt-get install -y libunwind8 libicu55 nodejs
+  apt-get install -y libunwind8 libicu55
 
 # "autorest --help --csharp" triggers loading csharp generator. The Docker image would be
 # imcomplete without it.
