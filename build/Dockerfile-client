@@ -10,7 +10,7 @@ RUN \
 # "autorest --help --csharp" triggers loading csharp generator. The Docker image would be
 # imcomplete without it.
 RUN \
-  curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+  curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
   apt-get install -y nodejs && \
   npm install -g autorest && \
   autorest --help --csharp
