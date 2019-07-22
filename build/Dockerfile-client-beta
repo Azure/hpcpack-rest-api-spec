@@ -1,0 +1,27 @@
+FROM ubuntu:16.04
+RUN \
+  apt-get update && \
+  apt-get install -y curl
+
+# These are required indirectly by autorest. And they seem to be dependencies of .Net Core,
+# which are required by the C# generator.
+RUN \
+  apt-get install -y libunwind8 libicu55
+
+# The PowerShell generator requires autorest@beta, PowerShell 6 and dotnet sdk 2.1.
+RUN \
+  curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
+  apt-get install -y nodejs && \
+  npm install -g autorest@beta
+
+# Install PowerShell && .NET SDK
+RUN \
+  curl -LO https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb && \
+  dpkg -i packages-microsoft-prod.deb && \
+  apt-get update && \
+  apt-get install -y powershell apt-transport-https dotnet-sdk-2.2
+
+# RUN \
+#   autorest --help --powershell
+
+WORKDIR /app

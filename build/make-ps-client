@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cwd="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+input_file=${1:?Input file must be specified.}
+output_dir=${2:?Output dir must be specified.}
+
+autorest --powershell --input-file="$input_file" --output-folder="$output_dir"
