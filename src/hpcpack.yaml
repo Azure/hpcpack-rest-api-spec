@@ -300,6 +300,8 @@ paths:
             ```
 
             Note that since the server accepts input in JSON, the XML has to be encoded in a JSON string.
+
+            See the [Job Schema](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc907034%28v%3dvs.85%29) for more details on the XML content.
           schema:
             type: string
       responses:
