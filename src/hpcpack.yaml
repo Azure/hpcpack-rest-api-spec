@@ -69,7 +69,7 @@ paths:
         - in: query
           name: properties
           type: string
-          description: A comma-separated list of the names for the properties of the nodes for which you want to get values. If you do not specify the Properties parameter, the response contains values for all of the available properties of the nodes.
+          description: A comma-separated list of the names for the properties of the nodes for which you want to get values. If you do not specify the Properties parameter, the response contains values for all of the available properties of the nodes. See [ISchedulerNode](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897552(v=vs.85)) for available properties.
           x-ms-parameter-location: method
         - in: query
           name: $filter
@@ -205,7 +205,7 @@ paths:
         - in: query
           name: properties
           type: string
-          description: A comma-separated list of the names for the properties of the jobs for which you want to get values.
+          description: A comma-separated list of the names for the properties of the jobs for which you want to get values. See [ISchedulerJob](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897474%28v%3dvs.85%29) for available properties.
           default: Id,Owner,Name,State,Priority
           x-ms-parameter-location: method
         - in: query
@@ -301,7 +301,7 @@ paths:
 
             Note that since the server accepts input in JSON, the XML has to be encoded in a JSON string.
 
-            See the [Job Schema](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc907034%28v%3dvs.85%29) for more details on the XML content.
+            See [Job Schema](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc907034%28v%3dvs.85%29) for more details on the XML content.
           schema:
             type: string
       responses:
@@ -325,7 +325,7 @@ paths:
         - in: query
           name: properties
           type: string
-          description: A comma-separated list of the names for the properties of the job for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the job.
+          description: A comma-separated list of the names for the properties of the job for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the job. See [ISchedulerJob](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897474%28v%3dvs.85%29) for available properties.
           x-ms-parameter-location: method
       responses:
         200:
@@ -528,7 +528,7 @@ paths:
         - in: query
           name: properties
           type: string
-          description: A comma-separated list of the names for the properties of the tasks for which you want to get values.
+          description: A comma-separated list of the names for the properties of the tasks for which you want to get values. See [ISchedulerTask](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897577(v=vs.85)) for avaialbe properties.
           default: TaskId,Name,State,CommandLine,ExitCode,ParentJobId,JobTaskId,InstanceId
           x-ms-parameter-location: method
         - in: query
@@ -636,7 +636,7 @@ paths:
         - in: query
           name: properties
           type: string
-          description: A comma-separated list of the names for the properties of the task for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the task.
+          description: A comma-separated list of the names for the properties of the task for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the task. See [ISchedulerTask](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897577(v=vs.85)) for avaialbe properties.
           x-ms-parameter-location: method
       responses:
         200:
@@ -829,7 +829,7 @@ paths:
         - in: query
           name: properties
           type: string
-          description: A comma-separated list of the names for the properties of the subtask for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the subtask.
+          description: A comma-separated list of the names for the properties of the subtask for which you want to get values. If you do not specify this parameter, the response contains values for all of the properties of the subtask. See [ISchedulerTask](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897577(v=vs.85)) for avaialbe properties.
           x-ms-parameter-location: method
       responses:
         200:
