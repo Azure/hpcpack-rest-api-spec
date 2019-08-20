@@ -8,12 +8,15 @@ RUN \
 RUN \
   apt-get install -y libunwind8 libicu55
 
-# "autorest --help --csharp" triggers loading csharp generator. The Docker image would be
-# imcomplete without it.
 RUN \
   curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
   apt-get install -y nodejs && \
-  npm install -g autorest && \
-  autorest --help --csharp
+  npm install -g autorest
+
+# Trigger loading various generators. The Docker image would be imcomplete without them.
+RUN \
+  autorest --help --csharp && \
+  autorest --help --typescript && \
+  autorest --help --nodejs
 
 WORKDIR /app
