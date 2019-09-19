@@ -994,7 +994,7 @@ definitions:
   RestObject:
     type: object
     properties:
-      properties:
+      Properties:
         type: array
         items:
           $ref: '#/definitions/RestProperty'
@@ -1002,9 +1002,9 @@ definitions:
   RestProperty:
     type: object
     properties:
-      name:
+      Name:
         type: string
-      value:
+      Value:
         type: string
 
 securityDefinitions:
