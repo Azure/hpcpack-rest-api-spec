@@ -194,7 +194,7 @@ paths:
               - CN002
               - CN003
               
-  /nodes/operation/{operation}:
+  /nodes/operations/{operation}:
     post:
       summary: Perform Operations on Nodes
       description: Perform operations, such as take nodes online/offline, on nodes.
