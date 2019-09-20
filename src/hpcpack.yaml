@@ -193,6 +193,29 @@ paths:
               - CN001
               - CN002
               - CN003
+              
+  /nodes/operation/{operation}:
+    post:
+      summary: Perform Operations on Nodes
+      description: Perform operations, such as take nodes online/offline, on nodes.
+      operationId: operateNodes
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: path
+          name: operation
+          type: string
+          description: The operation to do. The available ones are "online", "offline".
+          required: true
+        - in: body
+          name: nodeNames
+          schema: 
+            type: array
+            items:
+              type: string
+      responses:
+        204:
+          description: OK
+    
 
   /jobs:
     parameters:
