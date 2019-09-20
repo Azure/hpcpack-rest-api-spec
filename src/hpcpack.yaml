@@ -209,6 +209,7 @@ paths:
           enum: [online, offline]
         - in: body
           name: nodeNames
+          required: true
           schema: 
             type: array
             items:
