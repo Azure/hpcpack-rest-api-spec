@@ -204,8 +204,9 @@ paths:
         - in: path
           name: operation
           type: string
-          description: The operation to do. The available ones are "online", "offline".
+          description: The operation to do.
           required: true
+          enum: [online, offline]
         - in: body
           name: nodeNames
           schema: 
