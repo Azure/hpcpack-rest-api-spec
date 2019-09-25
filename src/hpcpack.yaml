@@ -67,6 +67,12 @@ paths:
       parameters:
         - $ref: '#/parameters/asUser'
         - in: query
+          name: nodeNames
+          type: string
+          description: |
+            A comma-separated list of names for which the node info will be retrieved. When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a node will be retrieved. When an invalid name is present, or when any exception happens, then no node info for that name will be returned. So the the result length may be less than the one of the input name array.
+          x-ms-parameter-location: method
+        - in: query
           name: properties
           type: string
           description: A comma-separated list of the names for the properties of the nodes for which you want to get values. If you do not specify the Properties parameter, the response contains values for all of the available properties of the nodes. See [ISchedulerNode](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897552(v=vs.85)) for available properties.
