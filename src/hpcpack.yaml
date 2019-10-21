@@ -200,6 +200,42 @@ paths:
               - CN002
               - CN003
               
+  /nodes/metrics:
+    get:
+      summary: Get Node Metrics
+      description: Get metrics of nodes
+      operationId: getNodeMetrics
+      parameters:
+        - in: query
+          name: metricNames
+          type: string
+          description: A comma separated names of metrics, available names are HPCCpuUsage, HPCMemoryPaging, HPCDiskThroughput, HPCNetwork and HPCCoresInUse
+          required: true
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return a list of metrics for nodes. For unreachable nodes, there's no metrics returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NodeMetric'
+          examples:
+            application/json:
+              - Metrics:
+                  HpcCpuUsage: 12.8772411
+                  HpcNetwork: 1824.31433
+                NodeName: WIN2016
+              - Metrics: {}
+                NodeName: CN002
+              - Metrics:
+                  HpcCpuUsage: 0.280579716
+                  HpcNetwork: 1898.60229
+                NodeName: CN003
+              - Metrics:
+                  HpcCpuUsage: 0.0335205644
+                  HpcNetwork: 559.0452
+                NodeName: CN001
+
   /nodes/operations/{operation}:
     post:
       summary: Perform Operations on Nodes
@@ -1036,6 +1072,17 @@ definitions:
         type: string
       Value:
         type: string
+        
+  NodeMetric:
+    type: object
+    properties:
+      NodeName: 
+        type: string
+      Metrics:
+        type: object
+        additionalProperties:
+          type: number
+          format: double
 
 securityDefinitions:
   basic:
