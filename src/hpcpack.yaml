@@ -58,6 +58,25 @@ paths:
           schema:
             type: string
             example: "M/d/yyyy h:mm:ss tt"
+            
+  /cluster/userRoles:
+    get:
+      summary: Get Cluster User Roles
+      description: Get the roles of the cluster user who makes the API call.
+      operationId: getUserRoles
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return the user roles in array.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserRole'
+          examples:
+            application/json:
+              - User
+              - Administrator
 
   /nodes:
     get:
@@ -1083,6 +1102,10 @@ definitions:
         additionalProperties:
           type: number
           format: double
+          
+  UserRole:
+    type: string
+    enum: [User, Administrator, JobAdministrator, JobOperator]
 
 securityDefinitions:
   basic:
