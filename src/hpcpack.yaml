@@ -77,6 +77,48 @@ paths:
             application/json:
               - User
               - Administrator
+              
+  /cluster/metrics/jobs:
+    get:
+      summary: Get Cluster Job Metrics
+      description: Get cluster job metrics for the last 7 days.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/MetricData'
+          examples:
+            application/json:
+              MetricName: Jobs
+              FromTime: '2019-10-29T08:38:07.4654494Z'
+              ToTime: '2019-11-05T08:38:07.4654494Z'
+              Instances:
+                - InstanceName: Number of finished jobs
+                  Values:
+                    - Key: '2019-11-02T08:11:00.01+00:00'
+                      Value: 47
+                    - Key: '2019-11-05T08:38:00.017+00:00'
+                      Value: 100
+                - InstanceName: Number of canceled jobs
+                  Values:
+                    - Key: '2019-11-02T08:11:00.01+00:00'
+                      Value: 17
+                    - Key: '2019-11-05T08:38:00.017+00:00'
+                      Value: 28
+
+  /cluster/nodeAvailability:
+    get:
+      summary: Get Cluster Node Availability
+      description: Get cluster node availability.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NodeAvailability'    
+          examples:
+            application/json:
+              Total: 4
+              Available: 3
 
   /nodes:
     get:
@@ -1102,6 +1144,46 @@ definitions:
         additionalProperties:
           type: number
           format: double
+
+  NodeAvailability:
+    type: object
+    properties:
+      Total:
+        type: integer
+      Available:
+        type: integer
+        
+  MetricInstanceData:
+    type: object
+    properties:
+      InstanceName: 
+        type: string
+      Values:
+        type: array
+        items:
+          type: object
+          properties:
+            Key:
+              type: string
+            Value:
+              type: number
+              format: float
+
+  MetricData:
+    type: object
+    properties:
+      MetricName:
+        type: string
+      FromTime:
+        type: string
+        format: date-time
+      ToTime:
+        type: string
+        format: date-time
+      Instances:
+        type: array
+        items:
+          $ref: '#/definitions/MetricInstanceData'
           
   UserRole:
     type: string
