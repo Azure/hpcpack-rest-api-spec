@@ -82,6 +82,9 @@ paths:
     get:
       summary: Get Cluster Job Metrics
       description: Get cluster job metrics for the last 7 days.
+      operationId: getClusterJobMetrics
+      parameters:
+        - $ref: '#/parameters/asUser'
       responses:
         200:
           description: OK
@@ -110,6 +113,9 @@ paths:
     get:
       summary: Get Cluster Node Availability
       description: Get cluster node availability.
+      operationId: getClusterNodeAvailability
+      parameters:
+        - $ref: '#/parameters/asUser'
       responses:
         200:
           description: OK
