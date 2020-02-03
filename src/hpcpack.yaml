@@ -156,6 +156,8 @@ paths:
           description: A node property by which nodes will be sorted. If this parameter is not specified or a property with a specified name does not exist for a node, the result will be sorted by node Id.
           default: Id
           x-ms-parameter-location: method
+        - $ref: "#/parameters/sortOrder"
+        - $ref: "#/parameters/startRow"
         - $ref: "#/parameters/rowsPerRead"
         - $ref: "#/parameters/queryId"
       responses:
@@ -358,6 +360,8 @@ paths:
           description: A job property by which jobs will be sorted. If this parameter is not specified or a property with a specified name does not exist for a job, the result will be sorted by job Id.
           default: Id
           x-ms-parameter-location: method
+        - $ref: "#/parameters/sortOrder"
+        - $ref: "#/parameters/startRow"          
         - $ref: "#/parameters/rowsPerRead"
         - $ref: "#/parameters/queryId"
       responses:
@@ -682,6 +686,8 @@ paths:
           description:  A task property by which tasks will be sorted. If this parameter is not specified or a property with a specified name does not exist for a task, the result will be sorted by task Id.
           default: TaskId
           x-ms-parameter-location: method
+        - $ref: "#/parameters/sortOrder"
+        - $ref: "#/parameters/startRow"          
         - $ref: "#/parameters/rowsPerRead"
         - $ref: "#/parameters/queryId"
       responses:
@@ -1098,6 +1104,20 @@ parameters:
     type: integer
     description: Subtask Id
     required: true
+    x-ms-parameter-location: method
+
+  startRow:
+    in: query
+    name: startRow
+    type: number
+    description: Specifies the start number of rows to read. The number of the first row is 0. When this parameter presents, pagination is activated and _queryId_ is ignored. And the total number of rows will be returned in the response header _x-ms-row-count_, while no _x-ms-continuation-queryId_ will be returned.
+    x-ms-parameter-location: method
+    
+  sortOrder:
+    in: query
+    name: asc
+    type: boolean
+    description: Specifies the sort order.
     x-ms-parameter-location: method
 
   rowsPerRead:
