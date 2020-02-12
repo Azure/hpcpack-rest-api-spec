@@ -78,6 +78,84 @@ paths:
               - User
               - Administrator
               
+  /cluster/metrics/definitions:
+    get:
+      summary: Get cluster metric definitions
+      description: Get cluster metric definitions. You can then get the history of a metric.
+      operationId: getClusterMetricDefintions
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return the definitions in array.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MetricDefinition'
+          examples:
+            application/json:
+              - Description: The number of cores used and allocated for the pool
+                DisplayName: Cluster Pool Usage
+                Name: HPCPoolUsage
+              - Description: The number of jobs on the cluster
+                DisplayName: Cluster Jobs
+                Name: HPCSchedulerJobs
+              - Description: The number of nodes in the cluster
+                DisplayName: Cluster Nodes
+                Name: HPCSchedulerNodes
+              
+  /cluster/metrics/history/{name}:
+    get:
+      summary: Get cluster metric history
+      description: Get cluster metric history
+      operationId: getClusterMetricHistory
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: path
+          name: name
+          type: string
+          description: Metric name
+          required: true
+          x-ms-parameter-location: method        
+        - in: query
+          name: fromTime
+          type: string
+          format: date-time
+          description: The start time in UTC
+          required: true
+          x-ms-parameter-location: method      
+        - in: query
+          name: toTime
+          type: string
+          format: date-time
+          description: The end time in UTC
+          required: true
+          x-ms-parameter-location: method     
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/MetricData'
+          examples:
+            application/json:
+              FromTime: '2020-02-12T00:00:00'
+              Instances:
+                - InstanceName: Instance
+                  Values:
+                    - Key: '2020-02-12T00:00:00Z'
+                      Value: 0.769676447
+                    - Key: '2020-02-12T00:01:00.01Z'
+                      Value: 0.487079352
+                    - Key: '2020-02-12T00:02:00Z'
+                      Value: 0.334808081
+                    - Key: '2020-02-12T00:03:00Z'
+                      Value: 0.326138228
+                    - Key: '2020-02-12T00:04:00Z'
+                      Value: 0.31930095
+              MetricName: HPCClusterCpu
+              ToTime: '2020-02-12T00:05:00'
+            
+
   /cluster/metrics/jobs:
     get:
       summary: Get Cluster Job Metrics
@@ -1178,6 +1256,16 @@ definitions:
         type: integer
       Available:
         type: integer
+        
+  MetricDefinition:
+    type: object
+    properties:
+      Name:
+        type: string
+      DisplayName:
+        type: string
+      Description:
+        type: string
         
   MetricInstanceData:
     type: object
