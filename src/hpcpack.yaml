@@ -289,64 +289,6 @@ paths:
             items:
               $ref: '#/definitions/RestProperty'
   
-  /nodes/groups:
-    get:
-      summary: Get Node Group List
-      description: Get the names and descriptions for all of the node groups for the HPC cluster.
-      operationId: getNodeGroups
-      parameters:
-        - $ref: '#/parameters/asUser'
-      responses:
-        200:
-          description: Return a list of node groups.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/RestObject'
-          examples:
-            application/json:
-              - Properties:
-                  - Name: Name
-                    Value: HeadNodes
-                  - Name: Description
-                    Value: The head nodes in the cluster
-              - Properties:
-                  - Name: Name
-                    Value: ComputeNodes
-                  - Name: Description
-                    Value: The compute nodes in the cluster
-              - Properties:
-                  - Name: Name
-                    Value: WCFBrokerNodes
-                  - Name: Description
-                    Value: The broker nodes in the cluster
-
-  /nodes/groups/{name}:
-    get:
-      summary: Get Node Group Members
-      description: Get the list of the nodes that belong to the specified node group.
-      operationId: getNodeGroupMembers
-      parameters:
-        - $ref: '#/parameters/asUser'
-        - in: path
-          name: name
-          type: string
-          description: Node group name.
-          required: true
-          x-ms-parameter-location: method
-      responses:
-        200:
-          description: Return a name list of nodes which belong to the node group.
-          schema:
-            type: array
-            items:
-              type: string
-          examples:
-            application/json:
-              - CN001
-              - CN002
-              - CN003
-              
   /nodes/metrics:
     get:
       summary: Get Node Metrics
@@ -406,6 +348,158 @@ paths:
       responses:
         204:
           description: OK
+
+  /nodeGroups:
+    parameters:
+    - $ref: '#/parameters/asUser'
+    get:
+      summary: Get Node Group List
+      description: Get the names and descriptions for all of the node groups for the HPC cluster.
+      operationId: getNodeGroups
+      responses:
+        200:
+          description: Return a list of node groups.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+            - Description: The head nodes in the cluster
+              Id: 0
+              Managed: true
+              Name: HeadNodes
+            - Description: The compute nodes in the cluster
+              Id: 1
+              Managed: true
+              Name: ComputeNodes
+            - Description: A newly created group
+              Id: 10
+              Managed: false
+              Name: New Group Name
+    post:
+      summary: Create a Node Group
+      description: Create a Node Group
+      operationId: createNodeGroup
+      parameters:
+        - in: body
+          name: nodeGroup
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return the newly created node group.
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+              Description: A newly created group
+              Id: 10
+              Managed: false
+              Name: New Group Name
+
+  /nodeGroups/{id}:
+    parameters:
+      - $ref: '#/parameters/asUser'  
+      - in: path
+        name: id
+        type: integer
+        description: Node group ID.
+        required: true
+        x-ms-parameter-location: method
+    get:
+      summary: Get Node Group
+      description: Get a node group by ID.
+      operationId: getNodeGroup
+      responses:
+        200:
+          description: Return a node group.
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+              Description: A newly created group
+              Id: 10
+              Managed: false
+              Name: New Group Name
+    put:
+      summary: Update Node Group
+      description: Update a node group.
+      operationId: updateNodeGroup
+      parameters:
+        - in: body
+          name: nodeGroup
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return the updated node group.
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+              Description: An updated node group
+              Id: 10
+              Managed: false
+              Name: Group Name
+    delete:
+      summary: Delete Node Group
+      description: Delete a node group.
+      operationId: deleteNodeGroup
+      responses:
+        204:
+          description: Return nothing.
+
+  /nodeGroups/{id}/nodes:
+    parameters:
+      - $ref: '#/parameters/asUser'  
+      - in: path
+        name: id
+        type: integer
+        description: Node group ID.
+        required: true
+        x-ms-parameter-location: method    
+    get:
+      summary: Get Nodes of a Group
+      description: Get the list of the nodes that belong to the specified node group.
+      operationId: getNodesOfGroup
+      responses:
+        200:
+          description: Return a list of names for nodes belonging to the group.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            application/json:
+              - CN001
+              - CN002
+              - CN003
+    patch:
+      summary: Add/Remove Nodes to/from a Group
+      description: Add nodes to, or remove nodes from, a node group.
+      operationId: moveNodesOfGroup
+      parameters:
+        - in: body
+          name: operation
+          schema:
+            $ref: '#/definitions/NodeGroupOperation'
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: |
+            Return a new list of names for nodes belonging to the group, after the movement.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            application/json:
+              - CN001
+              - CN002
+              - CN003
 
   /jobs:
     parameters:
@@ -1238,6 +1332,31 @@ definitions:
       Value:
         type: string
         
+  NodeGroup:
+    type: object
+    properties:
+      Id:
+        type: integer
+      Name:
+        type: string
+      Description:
+        type: string
+      Managed:
+        type: boolean
+        
+  NodeGroupOperation:
+    type: object
+    properties:
+      GroupId:
+        type: integer
+      Operation:
+        type: string
+        enum: [add, remove]
+      NodeNames:
+        type: array
+        items:
+          type: string
+
   NodeMetric:
     type: object
     properties:
@@ -1256,7 +1375,7 @@ definitions:
         type: integer
       Available:
         type: integer
-        
+
   MetricDefinition:
     type: object
     properties:
@@ -1266,7 +1385,7 @@ definitions:
         type: string
       Description:
         type: string
-        
+
   MetricInstanceData:
     type: object
     properties:
