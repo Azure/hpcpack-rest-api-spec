@@ -366,15 +366,12 @@ paths:
           examples:
             application/json:
             - Description: The head nodes in the cluster
-              Id: 0
               Managed: true
               Name: HeadNodes
             - Description: The compute nodes in the cluster
-              Id: 1
               Managed: true
               Name: ComputeNodes
             - Description: A newly created group
-              Id: 10
               Managed: false
               Name: New Group Name
     post:
@@ -395,22 +392,21 @@ paths:
           examples:
             application/json:
               Description: A newly created group
-              Id: 10
               Managed: false
               Name: New Group Name
 
-  /nodeGroups/{id}:
+  /nodeGroups/{name}:
     parameters:
       - $ref: '#/parameters/asUser'  
       - in: path
-        name: id
-        type: integer
-        description: Node group ID.
+        name: name
+        type: string
+        description: Node group name.
         required: true
         x-ms-parameter-location: method
     get:
       summary: Get Node Group
-      description: Get a node group by ID.
+      description: Get a node group by name.
       operationId: getNodeGroup
       responses:
         200:
@@ -420,7 +416,6 @@ paths:
           examples:
             application/json:
               Description: A newly created group
-              Id: 10
               Managed: false
               Name: New Group Name
     put:
@@ -441,7 +436,6 @@ paths:
           examples:
             application/json:
               Description: An updated node group
-              Id: 10
               Managed: false
               Name: Group Name
     delete:
@@ -452,13 +446,13 @@ paths:
         204:
           description: Return nothing.
 
-  /nodeGroups/{id}/nodes:
+  /nodeGroups/{name}/nodes:
     parameters:
       - $ref: '#/parameters/asUser'  
       - in: path
-        name: id
-        type: integer
-        description: Node group ID.
+        name: name
+        type: string
+        description: Node group name.
         required: true
         x-ms-parameter-location: method    
     get:
@@ -1335,8 +1329,6 @@ definitions:
   NodeGroup:
     type: object
     properties:
-      Id:
-        type: integer
       Name:
         type: string
       Description:
@@ -1347,8 +1339,8 @@ definitions:
   NodeGroupOperation:
     type: object
     properties:
-      GroupId:
-        type: integer
+      GroupName:
+        type: string
       Operation:
         type: string
         enum: [add, remove]
