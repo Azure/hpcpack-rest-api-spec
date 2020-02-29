@@ -203,6 +203,68 @@ paths:
             application/json:
               Total: 4
               Available: 3
+              
+  /cluster/operations:
+    get:
+      summary: Get Cluster Operation Logs
+      description: Get cluster operation logs.
+      operationId: getClusterOperations
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OperationLog'
+          examples:
+            application/json:
+            - Cancelable: true
+              Entries: null
+              Id: df46c08e-c233-4326-9af6-00e486382d22
+              Name: Auto grow shrink report
+              Node: (local)
+              Operator: SYSTEM
+              State: Executing
+              UpdateTime: '2020-02-29T12:17:02.7261417+00:00'
+
+  /cluster/operations/{id}:
+    get:
+      summary: Get Cluster Operation Log by ID
+      description: Get cluster operation log by ID.
+      operationId: getClusterOperation
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: path
+          name: id
+          type: string
+          description: Operation ID
+          required: true
+          x-ms-parameter-location: method        
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/OperationLog'
+          examples:
+            application/json:
+              Cancelable: true
+              Id: df46c08e-c233-4326-9af6-00e486382d22
+              Name: Auto grow shrink report
+              Node: (local)
+              Operator: SYSTEM
+              State: Executing
+              UpdateTime: '2020-02-29T12:17:02.7261417+00:00'
+              Entries:
+              - CreateTime: '2020-02-29T11:48:01.05+00:00'
+                Message: The count (0) of jobs who need resources is less than threshold 1
+                Severity: Information
+                Source: Client Api
+              - CreateTime: '2020-02-29T11:48:01.047+00:00'
+                Message: 'Start to get active/queued jobs&tasks, corePerNode is 4, corePerSocket is 4'
+                Severity: Information
+                Source: Client Api
 
   /nodes:
     get:
@@ -1413,6 +1475,43 @@ definitions:
   UserRole:
     type: string
     enum: [User, Administrator, JobAdministrator, JobOperator]
+    
+  OperationLogEntry:
+    type: object
+    properties:
+      Message:
+        type: string
+      Severity:
+        type: string
+        enum: [Error, Warning, Information, Trace]
+      Source:
+        type: string
+      CreateTime:
+        type: string
+        format: date-time
+
+  OperationLog:
+    type: object
+    properties:
+      Id:
+        type: string
+      Name:
+        type: string
+      State:
+        type: string
+      Operator:      
+        type: string
+      Node:
+        type: string
+      Cancelable:
+        type: boolean
+      UpdateTime:
+        type: string
+        format: date-time
+      Entries:
+        type: array
+        items:
+          $ref: '#/definitions/OperationLogEntry'
 
 securityDefinitions:
   basic:
