@@ -253,6 +253,54 @@ paths:
               State: Executing
               UpdateTime: '2020-02-29T12:17:02.7261417+00:00'
 
+  /cluster/operations/first:
+    get:
+      summary: Get the First Cluster Operation Log in Time Order
+      description: Get the first cluster operation log in time order, optionally under given conditions.
+      operationId: getClusterFirstOperation
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: query
+          name: fromTime
+          type: string
+          format: date-time
+          description: The start time(exclusive) in UTC
+          x-ms-parameter-location: method
+        - in: query
+          name: toTime
+          type: string
+          format: date-time
+          description: The end time(exclusive) in UTC
+          x-ms-parameter-location: method
+        - in: query
+          name: nodeNames
+          type: string
+          description: A comma-separated list of names for which the logs will be retrieved.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/OperationLog'
+          examples:
+            application/json:
+              Id: 3cc7c6ae-c65e-4d70-a3fd-819d272d4a72
+              Name: Initialize cluster management model configuration
+              State: Committed
+              Operator: SYSTEM
+              Node: (cluster)
+              Cancelable: true
+              UpdateTime: '2019-12-30T07:54:49.2689702+00:00'
+              Entries:
+                - Message: Creating Storage Manager Instance
+                  Severity: Information
+                  Source: SystemUpdate
+                  CreateTime: '2019-12-30T07:54:48.9+00:00'
+                - Message: Creating Template Manager Instance
+                  Severity: Information
+                  Source: SystemUpdate
+                  CreateTime: '2019-12-30T07:54:48.863+00:00'
+
   /cluster/operations/{id}:
     get:
       summary: Get Cluster Operation Log by ID
