@@ -211,6 +211,30 @@ paths:
       operationId: getClusterOperations
       parameters:
         - $ref: '#/parameters/asUser'
+        - in: query
+          name: fromTime
+          type: string
+          format: date-time
+          description: The start time(exclusive) in UTC
+          x-ms-parameter-location: method
+        - in: query
+          name: toTime
+          type: string
+          format: date-time
+          description: The end time(exclusive) in UTC
+          x-ms-parameter-location: method
+        - in: query
+          name: nodeNames
+          type: string
+          description: A comma-separated list of names for which the logs will be retrieved.
+          x-ms-parameter-location: method
+        - in: query
+          name: withDetail
+          type: boolean
+          default: false
+          description: |
+            Whether to include the "Entries" property for each log. By deafult no "Entries" will be returned.
+          x-ms-parameter-location: method
       responses:
         200:
           description: OK
