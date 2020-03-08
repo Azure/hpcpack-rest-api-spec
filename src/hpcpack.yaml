@@ -350,6 +350,13 @@ paths:
           type: string
           description: |
             A comma-separated list of names for which the node info will be retrieved. When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a node will be retrieved. When an invalid name is present, or when any exception happens, no node info for that name will be returned. So the the result length may be less than the one of the input name array.
+          x-ms-parameter-location: method        
+        - in: query
+          name: jobIds
+          type: string
+          description: |
+            A comma-separated list of job ids. It will list nodes that have been allocated for the jobs. The list of nodes does not shrink even if the server shrinks the nodes that it allocates to your job. An invalid job id will be ignored.
+            When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a node will be retrieved.
           x-ms-parameter-location: method
         - in: query
           name: properties
@@ -637,6 +644,12 @@ paths:
       description: Gets all/filtered jobs for the HPC cluster.
       operationId: getJobs
       parameters:
+        - in: query
+          name: nodeNames
+          type: string
+          description: |
+            A comma-separated list of nodes names. It will list jobs running on these nodes. When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a jobs will be retrieved. An invalid name will be ignored.
+          x-ms-parameter-location: method   
         - in: query
           name: properties
           type: string
