@@ -299,7 +299,7 @@ paths:
 
   /cluster/nodes/{name}/operations/{operation}:
     post:
-      summary: Get Cluster Node by Name
+      summary: Operate a Cluster Node
       description: |
         The requested operation will be performed asynchronously. The API doesn't ensure it's successfully on return. The caller has to query the node state for the operation result.
       operationId: operateClusterNode
