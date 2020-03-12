@@ -204,6 +204,118 @@ paths:
               Total: 4
               Available: 3
               
+  /cluster/nodes:
+    get:
+      summary: Get Cluster Nodes
+      operationId: getClusterNodes
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: query
+          name: names
+          type: string
+          description: A comma-separated list of node names.     
+        - in: query
+          name: jobs
+          type: string
+          description: A comma-separated list of job ids.        
+        - in: query
+          name: group
+          type: string
+          description: A node group name.
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Node'
+          examples:
+            application/json:
+            - ActiveServiceRoles:
+                - ComputeNode
+                - HeadNode
+                - BrokerNode
+              Cores: 8
+              Groups:
+                - WCFBrokerNodes
+                - ComputeNodes
+                - HeadNodes
+              Health: OK
+              HpcPackVersion: 6.0.7128.0
+              InstalledServiceRoles:
+                - HeadNode
+                - ComputeNode
+                - BrokerNode
+              Location: null
+              MemorySize: 28672
+              Name: HPCHN01
+              OnAzure: true
+              Roles:
+                - ComputeNode
+                - RouterNode
+              Sockets: 1
+              State: Online
+              Template: HeadNode Template
+
+  /cluster/nodes/{name}:
+    get:
+      summary: Get Cluster Node by Name
+      operationId: getClusterNode
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - $ref: '#/parameters/nodeName'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
+          examples:
+            application/json:
+              ActiveServiceRoles:
+                - ComputeNode
+                - HeadNode
+                - BrokerNode
+              Cores: 8
+              Groups:
+                - WCFBrokerNodes
+                - ComputeNodes
+                - HeadNodes
+              Health: OK
+              HpcPackVersion: 6.0.7128.0
+              InstalledServiceRoles:
+                - HeadNode
+                - ComputeNode
+                - BrokerNode
+              Location: null
+              MemorySize: 28672
+              Name: HPCHN01
+              OnAzure: true
+              Roles:
+                - ComputeNode
+                - RouterNode
+              Sockets: 1
+              State: Online
+              Template: HeadNode Template
+
+  /cluster/nodes/{name}/operations/{operation}:
+    post:
+      summary: Get Cluster Node by Name
+      description: |
+        The requested operation will be performed asynchronously. The API doesn't ensure it's successfully on return. The caller has to query the node state for the operation result.
+      operationId: operateClusterNode
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - $ref: '#/parameters/nodeName'
+        - in: path
+          name: operation
+          type: string
+          enum: [start, stop, reboot, shutdown, bringOnline, takeOffline]
+          required: true
+          x-ms-parameter-location: method
+      responses:
+        202:
+          description: Accepted
+
   /cluster/operations:
     get:
       summary: Get Cluster Operation Logs
@@ -1395,6 +1507,14 @@ parameters:
     description: The name of user whom you want to make request as. You must be an HPC Pack administrator or HPC Pack Job administrator to make it work.
     x-ms-parameter-location: method
     
+  nodeName:
+    in: path
+    name: name
+    type: string
+    description: Node name
+    required: true
+    x-ms-parameter-location: method  
+    
   jobId:
     in: path
     name: jobId
@@ -1473,6 +1593,48 @@ definitions:
       Value:
         type: string
         
+  Node:
+    type: object
+    properties:
+      Name:
+        type: string
+      State:
+        type: string
+        enum: [Unknown, Provisioning, Offline, Starting, Online, Draining, Rejected, Removing, NotDeployed, Stopping]
+      Health:
+        type: string
+        enum: [OK, Warning, Error, Transitional, Unapproved]
+      Template:
+        type: string
+      Location:
+        type: string
+      MemorySize:
+        type: number
+      Cores:
+        type: number
+      Sockets:
+        type: number
+      HpcPackVersion:
+        type: string
+      OnAzure:
+        type: boolean
+      Groups:
+        type: array
+        items:
+          type: string
+      Roles:
+        type: array
+        items:
+          type: string
+      InstalledServiceRoles:
+        type: array
+        items:
+          type: string
+      ActiveServiceRoles:
+        type: array
+        items:
+          type: string
+
   NodeGroup:
     type: object
     properties:
