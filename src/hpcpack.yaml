@@ -1593,17 +1593,27 @@ definitions:
       Value:
         type: string
         
+  NodeServiceRole:
+    type: string
+    enum: [HeadNode, ComputeNode, BrokerNode, WorkstationNode, AzureWorkerNode, AzureVMNode, UnManagedResource, LinuxNode, AzureBatchNode, NonDomainComputeNode]
+    
+  NodeState:
+    type: string
+    enum: [Unknown, Provisioning, Offline, Starting, Online, Draining, Rejected, Removing, NotDeployed, Stopping]
+    
+  NodeHealth:
+    type: string
+    enum: [OK, Warning, Error, Transitional, Unapproved]
+    
   Node:
     type: object
     properties:
       Name:
         type: string
       State:
-        type: string
-        enum: [Unknown, Provisioning, Offline, Starting, Online, Draining, Rejected, Removing, NotDeployed, Stopping]
+        $ref: '#/definitions/NodeState'
       Health:
-        type: string
-        enum: [OK, Warning, Error, Transitional, Unapproved]
+        $ref: '#/definitions/NodeHealth'
       Template:
         type: string
       Location:
@@ -1629,11 +1639,11 @@ definitions:
       InstalledServiceRoles:
         type: array
         items:
-          type: string
+          $ref: '#/definitions/NodeServiceRole'
       ActiveServiceRoles:
         type: array
         items:
-          type: string
+          $ref: '#/definitions/NodeServiceRole'
 
   NodeGroup:
     type: object
