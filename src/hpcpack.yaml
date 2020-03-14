@@ -222,6 +222,16 @@ paths:
           name: group
           type: string
           description: A node group name.
+        - in: query
+          name: state
+          type: string
+          enum: [Unknown, Provisioning, Offline, Starting, Online, Draining, Rejected, Removing, NotDeployed, Stopping]
+          description: Node state.
+        - in: query
+          name: health
+          type: string
+          enum: [OK, Warning, Error, Transitional, Unapproved]
+          description: Node health.
       responses:
         200:
           description: OK
