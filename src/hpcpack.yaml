@@ -187,23 +187,6 @@ paths:
                     - Key: '2019-11-05T08:38:00.017+00:00'
                       Value: 28
 
-  /cluster/nodeAvailability:
-    get:
-      summary: Get Cluster Node Availability
-      description: Get cluster node availability.
-      operationId: getClusterNodeAvailability
-      parameters:
-        - $ref: '#/parameters/asUser'
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/NodeAvailability'    
-          examples:
-            application/json:
-              Total: 4
-              Available: 3
-              
   /cluster/nodes:
     get:
       summary: Get Cluster Nodes
@@ -325,7 +308,43 @@ paths:
       responses:
         202:
           description: Accepted
-
+  
+  /cluster/nodes/metrics:
+    get:
+      summary: Get Node Metrics
+      description: Get metrics of nodes
+      operationId: getClusterNodeMetrics
+      parameters:
+        - in: query
+          name: metricNames
+          type: string
+          description: A comma separated names of metrics, available names are HPCCpuUsage, HPCMemoryPaging, HPCDiskThroughput, HPCNetwork and HPCCoresInUse
+          required: true
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return a list of metrics for nodes. For unreachable nodes, there's no metrics returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NodeMetric'
+          examples:
+            application/json:
+              - Metrics:
+                  HpcCpuUsage: 12.8772411
+                  HpcNetwork: 1824.31433
+                NodeName: WIN2016
+              - Metrics: {}
+                NodeName: CN002
+              - Metrics:
+                  HpcCpuUsage: 0.280579716
+                  HpcNetwork: 1898.60229
+                NodeName: CN003
+              - Metrics:
+                  HpcCpuUsage: 0.0335205644
+                  HpcNetwork: 559.0452
+                NodeName: CN001
+                
   /cluster/nodes/stats/state:
     get:
       summary: Get Cluster Node Stat of State
@@ -498,159 +517,7 @@ paths:
                 Severity: Information
                 Source: Client Api
 
-  /nodes:
-    get:
-      summary: Get Node List
-      description: Get the values of the specified properties for all of the nodes in an HPC cluster.
-      operationId: getNodes
-      parameters:
-        - $ref: '#/parameters/asUser'
-        - in: query
-          name: nodeNames
-          type: string
-          description: |
-            A comma-separated list of names for which the node info will be retrieved. When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a node will be retrieved. When an invalid name is present, or when any exception happens, no node info for that name will be returned. So the the result length may be less than the one of the input name array.
-          x-ms-parameter-location: method        
-        - in: query
-          name: jobIds
-          type: string
-          description: |
-            A comma-separated list of job ids. It will list nodes that have been allocated for the jobs. The list of nodes does not shrink even if the server shrinks the nodes that it allocates to your job. An invalid job id will be ignored.
-            When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a node will be retrieved.
-          x-ms-parameter-location: method
-        - in: query
-          name: properties
-          type: string
-          description: A comma-separated list of the names for the properties of the nodes for which you want to get values. If you do not specify the Properties parameter, the response contains values for all of the available properties of the nodes. See [ISchedulerNode](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897552(v=vs.85)) for available properties.
-          x-ms-parameter-location: method
-        - in: query
-          name: $filter
-          type: string
-          description: |
-            Filter result by specified filters. A filter is in the form of "<name>%20eq%20<value>". Now the only available filter is _NodeState_.
-          x-ms-parameter-location: method
-        - in: query
-          name: sortNodesBy
-          type: string
-          description: A node property by which nodes will be sorted. If this parameter is not specified or a property with a specified name does not exist for a node, the result will be sorted by node Id.
-          default: Id
-          x-ms-parameter-location: method
-        - $ref: "#/parameters/sortOrder"
-        - $ref: "#/parameters/startRow"
-        - $ref: "#/parameters/rowsPerRead"
-        - $ref: "#/parameters/queryId"
-      responses:
-        200:
-          description: Return a list of nodes.
-          headers:
-            x-ms-continuation-queryId:
-              type: string
-              description: |
-                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
-                
-                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/RestObject'
-          examples:
-            application/json:
-              - Properties:
-                  - Name: Id
-                    Value: '1'
-                  - Name: Name
-                    Value: WIN2016
-                  - Name: State
-                    Value: Online
-                  - Name: Availability
-                    Value: AlwaysOn
-                  - Name: Location
-                    Value: OnPremise
-                  - Name: OnlineTime
-                    Value: '7/5/2019 9:05:07 AM'
-
-  /nodes/{name}:
-    get:
-      summary: Get Node by Name
-      description: Get the values of all of the properties for the specified node.
-      operationId: getNodeByName
-      parameters:
-        - $ref: '#/parameters/asUser'
-        - in: path
-          name: name
-          type: string
-          description: Node name.
-          required: true
-          x-ms-parameter-location: method
-      responses:
-        200:
-          description: Return all properties of the node.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/RestProperty'
-  
-  /nodes/metrics:
-    get:
-      summary: Get Node Metrics
-      description: Get metrics of nodes
-      operationId: getNodeMetrics
-      parameters:
-        - in: query
-          name: metricNames
-          type: string
-          description: A comma separated names of metrics, available names are HPCCpuUsage, HPCMemoryPaging, HPCDiskThroughput, HPCNetwork and HPCCoresInUse
-          required: true
-          x-ms-parameter-location: method
-      responses:
-        200:
-          description: Return a list of metrics for nodes. For unreachable nodes, there's no metrics returned.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/NodeMetric'
-          examples:
-            application/json:
-              - Metrics:
-                  HpcCpuUsage: 12.8772411
-                  HpcNetwork: 1824.31433
-                NodeName: WIN2016
-              - Metrics: {}
-                NodeName: CN002
-              - Metrics:
-                  HpcCpuUsage: 0.280579716
-                  HpcNetwork: 1898.60229
-                NodeName: CN003
-              - Metrics:
-                  HpcCpuUsage: 0.0335205644
-                  HpcNetwork: 559.0452
-                NodeName: CN001
-
-  /nodes/operations/{operation}:
-    post:
-      summary: Perform Operations on Nodes
-      description: Perform operations, such as take nodes online/offline, on nodes.
-      operationId: operateNodes
-      parameters:
-        - $ref: '#/parameters/asUser'
-        - in: path
-          name: operation
-          type: string
-          description: The operation to do.
-          required: true
-          enum: [online, offline]
-        - in: body
-          name: nodeNames
-          required: true
-          schema: 
-            type: array
-            items:
-              type: string
-      responses:
-        204:
-          description: OK
-
-  /nodeGroups:
+  /cluster/nodeGroups:
     parameters:
     - $ref: '#/parameters/asUser'
     get:
@@ -696,7 +563,7 @@ paths:
               Managed: false
               Name: New Group Name
 
-  /nodeGroups/{name}:
+  /cluster/nodeGroups/{name}:
     parameters:
       - $ref: '#/parameters/asUser'  
       - in: path
@@ -747,7 +614,7 @@ paths:
         204:
           description: Return nothing.
 
-  /nodeGroups/{name}/nodes:
+  /cluster/nodeGroups/{name}/nodes:
     parameters:
       - $ref: '#/parameters/asUser'  
       - in: path
@@ -1746,14 +1613,6 @@ definitions:
         additionalProperties:
           type: number
           format: double
-
-  NodeAvailability:
-    type: object
-    properties:
-      Total:
-        type: integer
-      Available:
-        type: integer
 
   MetricDefinition:
     type: object
