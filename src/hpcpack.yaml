@@ -339,10 +339,13 @@ paths:
             $ref: '#/definitions/NodeStatOfState'
           examples:
             application/json:
-              NotDeployed: 3
-              Offline: 1
-              Online: 4
-          
+              - Name: Online
+                Value: 3
+              - Name: NotDeployed
+                Value: 4
+              - Name: Offline
+                Value: 1
+
   /cluster/nodes/stats/health:
     get:
       summary: Get Cluster Node Stat of Health
@@ -356,8 +359,10 @@ paths:
             $ref: '#/definitions/NodeStatOfHealth'
           examples:
             application/json:
-              OK: 5
-              Unapproved: 3
+              - Name: OK
+                Value: 4
+              - Name: Unapproved
+                Value: 4
 
   /cluster/operations:
     get:
