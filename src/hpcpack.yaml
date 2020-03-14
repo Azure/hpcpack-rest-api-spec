@@ -1650,19 +1650,13 @@ definitions:
     
   NodeStatOfState:
     type: object
-    properties:
-      Name:
-        $ref: '#/definitions/NodeState'
-      Value:
-        type: number
+    additionalProperties:
+      type: number
         
   NodeStatOfHealth:
     type: object
-    properties:
-      Name:
-        $ref: '#/definitions/NodeHealth'
-      Value:
-        type: number
+    additionalProperties:
+      type: number
         
   Node:
     type: object
