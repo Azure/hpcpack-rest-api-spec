@@ -257,23 +257,6 @@ paths:
               State: Online
               Template: HeadNode Template
 
-  /cluster/nodes/stat:
-    get:
-      summary: Get Cluster Node Stat
-      operationId: getClusterNodeStat
-      parameters:
-        - $ref: '#/parameters/asUser'
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/definitions/NodeStatOfState'
-          examples:
-            application/json:
-              NotDeployed: 3
-              Offline: 1
-              Online: 4
-          
   /cluster/nodes/{name}:
     get:
       summary: Get Cluster Node by Name
@@ -332,6 +315,39 @@ paths:
       responses:
         202:
           description: Accepted
+
+  /cluster/nodes/stats/state:
+    get:
+      summary: Get Cluster Node Stat of State
+      operationId: getClusterNodeStatOfState
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NodeStatOfState'
+          examples:
+            application/json:
+              NotDeployed: 3
+              Offline: 1
+              Online: 4
+          
+  /cluster/nodes/stats/health:
+    get:
+      summary: Get Cluster Node Stat of Health
+      operationId: getClusterNodeStatOfHealth
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NodeStatOfHealth'
+          examples:
+            application/json:
+              OK: 5
+              Unapproved: 3
 
   /cluster/operations:
     get:
@@ -1627,6 +1643,14 @@ definitions:
     properties:
       Name:
         $ref: '#/definitions/NodeState'
+      Value:
+        type: number
+        
+  NodeStatOfHealth:
+    type: object
+    properties:
+      Name:
+        $ref: '#/definitions/NodeHealth'
       Value:
         type: number
         
