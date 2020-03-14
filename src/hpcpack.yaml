@@ -257,6 +257,23 @@ paths:
               State: Online
               Template: HeadNode Template
 
+  /cluster/nodes/stat:
+    get:
+      summary: Get Cluster Node Stat
+      operationId: getClusterNodeStat
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NodeStatOfState'
+          examples:
+            application/json:
+              NotDeployed: 3
+              Offline: 1
+              Online: 4
+          
   /cluster/nodes/{name}:
     get:
       summary: Get Cluster Node by Name
@@ -1605,6 +1622,14 @@ definitions:
     type: string
     enum: [OK, Warning, Error, Transitional, Unapproved]
     
+  NodeStatOfState:
+    type: object
+    properties:
+      Name:
+        $ref: '#/definitions/NodeState'
+      Value:
+        type: number
+        
   Node:
     type: object
     properties:
