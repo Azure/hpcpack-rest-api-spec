@@ -1649,15 +1649,25 @@ definitions:
     enum: [OK, Warning, Error, Transitional, Unapproved]
     
   NodeStatOfState:
-    type: object
-    additionalProperties:
-      type: number
-        
+    type: array
+    items:
+      type: object
+      properties:
+        name: 
+          $ref: '#/definitions/NodeState'
+        value:
+          type: number
+
   NodeStatOfHealth:
-    type: object
-    additionalProperties:
-      type: number
-        
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          $ref: '#/definitions/NodeHealth'
+        value:
+          type: number
+
   Node:
     type: object
     properties:
