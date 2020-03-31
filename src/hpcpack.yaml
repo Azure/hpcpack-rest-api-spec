@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   version: "2016-11-01.5.3"
-  title: HPC Pack REST API 2016
+  title: HPC Pack REST API 2019
   description: This is the API spec for Microsoft HPC Pack 2016 Update 3.
   contact:
     email: hpcpack@microsoft.com
@@ -386,7 +386,7 @@ paths:
   /cluster/operations:
     get:
       summary: Get Cluster Operation Logs
-      description: Get cluster operation logs.
+      description: Get cluster operation logs in time order, with the latest log being first.
       operationId: getClusterOperations
       parameters:
         - $ref: '#/parameters/asUser'
@@ -401,6 +401,12 @@ paths:
           type: string
           format: date-time
           description: The end time(exclusive) in UTC
+          x-ms-parameter-location: method        
+        - in: query
+          name: limit
+          type: number
+          format: integer
+          description: The max number of logs to return
           x-ms-parameter-location: method
         - in: query
           name: nodeNames
