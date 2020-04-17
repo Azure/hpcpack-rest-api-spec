@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
-  version: "2016-11-01.5.3"
-  title: HPC Pack REST API 2016
-  description: This is the API spec for Microsoft HPC Pack 2016 Update 3.
+  version: "2020-01-01.6.0"
+  title: HPC Pack REST API 2019
+  description: This is the API spec for Microsoft HPC Pack 2019.
   contact:
     email: hpcpack@microsoft.com
 
@@ -58,153 +58,262 @@ paths:
           schema:
             type: string
             example: "M/d/yyyy h:mm:ss tt"
-
-  /nodes:
+            
+  /cluster/userRoles:
     get:
-      summary: Get Node List
-      description: Get the values of the specified properties for all of the nodes in an HPC cluster.
-      operationId: getNodes
+      summary: Get Cluster User Roles
+      description: Get the roles of the cluster user who makes the API call.
+      operationId: getUserRoles
       parameters:
         - $ref: '#/parameters/asUser'
-        - in: query
-          name: nodeNames
-          type: string
-          description: |
-            A comma-separated list of names for which the node info will be retrieved. When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a node will be retrieved. When an invalid name is present, or when any exception happens, no node info for that name will be returned. So the the result length may be less than the one of the input name array.
-          x-ms-parameter-location: method
-        - in: query
-          name: properties
-          type: string
-          description: A comma-separated list of the names for the properties of the nodes for which you want to get values. If you do not specify the Properties parameter, the response contains values for all of the available properties of the nodes. See [ISchedulerNode](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc897552(v=vs.85)) for available properties.
-          x-ms-parameter-location: method
-        - in: query
-          name: $filter
-          type: string
-          description: |
-            Filter result by specified filters. A filter is in the form of "<name>%20eq%20<value>". Now the only available filter is _NodeState_.
-          x-ms-parameter-location: method
-        - in: query
-          name: sortNodesBy
-          type: string
-          description: A node property by which nodes will be sorted. If this parameter is not specified or a property with a specified name does not exist for a node, the result will be sorted by node Id.
-          default: Id
-          x-ms-parameter-location: method
-        - $ref: "#/parameters/rowsPerRead"
-        - $ref: "#/parameters/queryId"
       responses:
         200:
-          description: Return a list of nodes.
-          headers:
-            x-ms-continuation-queryId:
-              type: string
-              description: |
-                Enables large sets of data to be returned in smaller responses across a continuation sequence of several requests. The value of this header is to be assigned to the _queryId_ query parameter in the next call of the sequence of calls to this API. The response contains this header as long as additional data remains to be processed. 
-                
-                The format of the data in this header is not guaranteed to remain unchanged. You should only copy the data in this header from one operation in a set of multiple operations to the _queryId_ URI parameter for the next operation. You should not use the data in this header or depend on the format of the data in this header in any other way.
+          description: Return the user roles in array.
           schema:
             type: array
             items:
-              $ref: '#/definitions/RestObject'
+              $ref: '#/definitions/UserRole'
           examples:
             application/json:
-              - Properties:
-                  - Name: Id
-                    Value: '1'
-                  - Name: Name
-                    Value: WIN2016
-                  - Name: State
-                    Value: Online
-                  - Name: Availability
-                    Value: AlwaysOn
-                  - Name: Location
-                    Value: OnPremise
-                  - Name: OnlineTime
-                    Value: '7/5/2019 9:05:07 AM'
-
-  /nodes/{name}:
-    get:
-      summary: Get Node by Name
-      description: Get the values of all of the properties for the specified node.
-      operationId: getNodeByName
-      parameters:
-        - $ref: '#/parameters/asUser'
-        - in: path
-          name: name
-          type: string
-          description: Node name.
-          required: true
-          x-ms-parameter-location: method
-      responses:
-        200:
-          description: Return all properties of the node.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/RestProperty'
-  
-  /nodes/groups:
-    get:
-      summary: Get Node Group List
-      description: Get the names and descriptions for all of the node groups for the HPC cluster.
-      operationId: getNodeGroups
-      parameters:
-        - $ref: '#/parameters/asUser'
-      responses:
-        200:
-          description: Return a list of node groups.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/RestObject'
-          examples:
-            application/json:
-              - Properties:
-                  - Name: Name
-                    Value: HeadNodes
-                  - Name: Description
-                    Value: The head nodes in the cluster
-              - Properties:
-                  - Name: Name
-                    Value: ComputeNodes
-                  - Name: Description
-                    Value: The compute nodes in the cluster
-              - Properties:
-                  - Name: Name
-                    Value: WCFBrokerNodes
-                  - Name: Description
-                    Value: The broker nodes in the cluster
-
-  /nodes/groups/{name}:
-    get:
-      summary: Get Node Group Members
-      description: Get the list of the nodes that belong to the specified node group.
-      operationId: getNodeGroupMembers
-      parameters:
-        - $ref: '#/parameters/asUser'
-        - in: path
-          name: name
-          type: string
-          description: Node group name.
-          required: true
-          x-ms-parameter-location: method
-      responses:
-        200:
-          description: Return a name list of nodes which belong to the node group.
-          schema:
-            type: array
-            items:
-              type: string
-          examples:
-            application/json:
-              - CN001
-              - CN002
-              - CN003
+              - User
+              - Administrator
               
-  /nodes/metrics:
+  /cluster/metrics/definitions:
+    get:
+      summary: Get cluster metric definitions
+      description: Get cluster metric definitions. You can then get the history of a metric.
+      operationId: getClusterMetricDefintions
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return the definitions in array.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MetricDefinition'
+          examples:
+            application/json:
+              - Description: The number of cores used and allocated for the pool
+                DisplayName: Cluster Pool Usage
+                Name: HPCPoolUsage
+              - Description: The number of jobs on the cluster
+                DisplayName: Cluster Jobs
+                Name: HPCSchedulerJobs
+              - Description: The number of nodes in the cluster
+                DisplayName: Cluster Nodes
+                Name: HPCSchedulerNodes
+              
+  /cluster/metrics/history/{name}:
+    get:
+      summary: Get cluster metric history
+      description: Get cluster metric history
+      operationId: getClusterMetricHistory
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: path
+          name: name
+          type: string
+          description: Metric name
+          required: true
+          x-ms-parameter-location: method        
+        - in: query
+          name: fromTime
+          type: string
+          format: date-time
+          description: The start time in UTC
+          required: true
+          x-ms-parameter-location: method      
+        - in: query
+          name: toTime
+          type: string
+          format: date-time
+          description: The end time in UTC
+          required: true
+          x-ms-parameter-location: method     
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/MetricData'
+          examples:
+            application/json:
+              FromTime: '2020-02-12T00:00:00'
+              Instances:
+                - InstanceName: Instance
+                  Values:
+                    - Key: '2020-02-12T00:00:00Z'
+                      Value: 0.769676447
+                    - Key: '2020-02-12T00:01:00.01Z'
+                      Value: 0.487079352
+                    - Key: '2020-02-12T00:02:00Z'
+                      Value: 0.334808081
+                    - Key: '2020-02-12T00:03:00Z'
+                      Value: 0.326138228
+                    - Key: '2020-02-12T00:04:00Z'
+                      Value: 0.31930095
+              MetricName: HPCClusterCpu
+              ToTime: '2020-02-12T00:05:00'
+            
+
+  /cluster/metrics/jobs:
+    get:
+      summary: Get Cluster Job Metrics
+      description: Get cluster job metrics for the last 7 days.
+      operationId: getClusterJobMetrics
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/MetricData'
+          examples:
+            application/json:
+              MetricName: Jobs
+              FromTime: '2019-10-29T08:38:07.4654494Z'
+              ToTime: '2019-11-05T08:38:07.4654494Z'
+              Instances:
+                - InstanceName: Number of finished jobs
+                  Values:
+                    - Key: '2019-11-02T08:11:00.01+00:00'
+                      Value: 47
+                    - Key: '2019-11-05T08:38:00.017+00:00'
+                      Value: 100
+                - InstanceName: Number of canceled jobs
+                  Values:
+                    - Key: '2019-11-02T08:11:00.01+00:00'
+                      Value: 17
+                    - Key: '2019-11-05T08:38:00.017+00:00'
+                      Value: 28
+
+  /cluster/nodes:
+    get:
+      summary: Get Cluster Nodes
+      operationId: getClusterNodes
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: query
+          name: names
+          type: string
+          description: A comma-separated list of node names.     
+        - in: query
+          name: jobs
+          type: string
+          description: A comma-separated list of job ids.        
+        - in: query
+          name: group
+          type: string
+          description: A node group name.
+        - in: query
+          name: state
+          type: string
+          enum: [Unknown, Provisioning, Offline, Starting, Online, Draining, Rejected, Removing, NotDeployed, Stopping]
+          description: Node state.
+        - in: query
+          name: health
+          type: string
+          enum: [OK, Warning, Error, Transitional, Unapproved]
+          description: Node health.
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Node'
+          examples:
+            application/json:
+            - ActiveServiceRoles:
+                - ComputeNode
+                - HeadNode
+                - BrokerNode
+              Cores: 8
+              Groups:
+                - WCFBrokerNodes
+                - ComputeNodes
+                - HeadNodes
+              Health: OK
+              HpcPackVersion: 6.0.7128.0
+              InstalledServiceRoles:
+                - HeadNode
+                - ComputeNode
+                - BrokerNode
+              Location: null
+              MemorySize: 28672
+              Name: HPCHN01
+              OnAzure: true
+              Roles:
+                - ComputeNode
+                - RouterNode
+              Sockets: 1
+              State: Online
+              Template: HeadNode Template
+
+  /cluster/nodes/{name}:
+    get:
+      summary: Get Cluster Node by Name
+      operationId: getClusterNode
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - $ref: '#/parameters/nodeName'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
+          examples:
+            application/json:
+              ActiveServiceRoles:
+                - ComputeNode
+                - HeadNode
+                - BrokerNode
+              Cores: 8
+              Groups:
+                - WCFBrokerNodes
+                - ComputeNodes
+                - HeadNodes
+              Health: OK
+              HpcPackVersion: 6.0.7128.0
+              InstalledServiceRoles:
+                - HeadNode
+                - ComputeNode
+                - BrokerNode
+              Location: null
+              MemorySize: 28672
+              Name: HPCHN01
+              OnAzure: true
+              Roles:
+                - ComputeNode
+                - RouterNode
+              Sockets: 1
+              State: Online
+              Template: HeadNode Template
+
+  /cluster/nodes/{name}/operations/{operation}:
+    post:
+      summary: Operate a Cluster Node
+      description: |
+        The requested operation will be performed asynchronously. The API doesn't ensure it's successfully on return. The caller has to query the node state for the operation result.
+      operationId: operateClusterNode
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - $ref: '#/parameters/nodeName'
+        - in: path
+          name: operation
+          type: string
+          enum: [start, stop, reboot, shutdown, bringOnline, takeOffline]
+          required: true
+          x-ms-parameter-location: method
+      responses:
+        202:
+          description: Accepted
+  
+  /cluster/nodes/metrics:
     get:
       summary: Get Node Metrics
       description: Get metrics of nodes
-      operationId: getNodeMetrics
+      operationId: getClusterNodeMetrics
       parameters:
         - in: query
           name: metricNames
@@ -235,30 +344,330 @@ paths:
                   HpcCpuUsage: 0.0335205644
                   HpcNetwork: 559.0452
                 NodeName: CN001
+                
+  /cluster/nodes/stats/state:
+    get:
+      summary: Get Cluster Node Stat of State
+      operationId: getClusterNodeStatOfState
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NodeStatOfState'
+          examples:
+            application/json:
+              - Name: Online
+                Value: 3
+              - Name: NotDeployed
+                Value: 4
+              - Name: Offline
+                Value: 1
 
-  /nodes/operations/{operation}:
-    post:
-      summary: Perform Operations on Nodes
-      description: Perform operations, such as take nodes online/offline, on nodes.
-      operationId: operateNodes
+  /cluster/nodes/stats/health:
+    get:
+      summary: Get Cluster Node Stat of Health
+      operationId: getClusterNodeStatOfHealth
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NodeStatOfHealth'
+          examples:
+            application/json:
+              - Name: OK
+                Value: 4
+              - Name: Unapproved
+                Value: 4
+
+  /cluster/operations:
+    get:
+      summary: Get Cluster Operation Logs
+      description: Get cluster operation logs in time order, with the latest log being first.
+      operationId: getClusterOperations
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: query
+          name: fromTime
+          type: string
+          format: date-time
+          description: The start time(exclusive) in UTC
+          x-ms-parameter-location: method
+        - in: query
+          name: toTime
+          type: string
+          format: date-time
+          description: The end time(exclusive) in UTC
+          x-ms-parameter-location: method        
+        - in: query
+          name: limit
+          type: number
+          format: integer
+          description: The max number of logs to return
+          x-ms-parameter-location: method
+        - in: query
+          name: nodeNames
+          type: string
+          description: A comma-separated list of names for which the logs will be retrieved.
+          x-ms-parameter-location: method
+        - in: query
+          name: withDetail
+          type: boolean
+          default: false
+          description: |
+            Whether to include the "Entries" property for each log. By deafult no "Entries" will be returned.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OperationLog'
+          examples:
+            application/json:
+            - Cancelable: true
+              Entries: null
+              Id: df46c08e-c233-4326-9af6-00e486382d22
+              Name: Auto grow shrink report
+              Node: (local)
+              Operator: SYSTEM
+              State: Executing
+              UpdateTime: '2020-02-29T12:17:02.7261417+00:00'
+
+  /cluster/operations/first:
+    get:
+      summary: Get the First Cluster Operation Log in Time Order
+      description: Get the first cluster operation log in time order, optionally under given conditions.
+      operationId: getClusterFirstOperation
+      parameters:
+        - $ref: '#/parameters/asUser'
+        - in: query
+          name: fromTime
+          type: string
+          format: date-time
+          description: The start time(exclusive) in UTC
+          x-ms-parameter-location: method
+        - in: query
+          name: toTime
+          type: string
+          format: date-time
+          description: The end time(exclusive) in UTC
+          x-ms-parameter-location: method
+        - in: query
+          name: nodeNames
+          type: string
+          description: A comma-separated list of names for which the logs will be retrieved.
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/OperationLog'
+          examples:
+            application/json:
+              Id: 3cc7c6ae-c65e-4d70-a3fd-819d272d4a72
+              Name: Initialize cluster management model configuration
+              State: Committed
+              Operator: SYSTEM
+              Node: (cluster)
+              Cancelable: true
+              UpdateTime: '2019-12-30T07:54:49.2689702+00:00'
+              Entries:
+                - Message: Creating Storage Manager Instance
+                  Severity: Information
+                  Source: SystemUpdate
+                  CreateTime: '2019-12-30T07:54:48.9+00:00'
+                - Message: Creating Template Manager Instance
+                  Severity: Information
+                  Source: SystemUpdate
+                  CreateTime: '2019-12-30T07:54:48.863+00:00'
+
+  /cluster/operations/{id}:
+    get:
+      summary: Get Cluster Operation Log by ID
+      description: Get cluster operation log by ID.
+      operationId: getClusterOperation
       parameters:
         - $ref: '#/parameters/asUser'
         - in: path
-          name: operation
+          name: id
           type: string
-          description: The operation to do.
+          description: Operation ID
           required: true
-          enum: [online, offline]
+          x-ms-parameter-location: method        
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/OperationLog'
+          examples:
+            application/json:
+              Cancelable: true
+              Id: df46c08e-c233-4326-9af6-00e486382d22
+              Name: Auto grow shrink report
+              Node: (local)
+              Operator: SYSTEM
+              State: Executing
+              UpdateTime: '2020-02-29T12:17:02.7261417+00:00'
+              Entries:
+              - CreateTime: '2020-02-29T11:48:01.05+00:00'
+                Message: The count (0) of jobs who need resources is less than threshold 1
+                Severity: Information
+                Source: Client Api
+              - CreateTime: '2020-02-29T11:48:01.047+00:00'
+                Message: 'Start to get active/queued jobs&tasks, corePerNode is 4, corePerSocket is 4'
+                Severity: Information
+                Source: Client Api
+
+  /cluster/nodeGroups:
+    parameters:
+    - $ref: '#/parameters/asUser'
+    get:
+      summary: Get Node Group List
+      description: Get the names and descriptions for all of the node groups for the HPC cluster.
+      operationId: getNodeGroups
+      responses:
+        200:
+          description: Return a list of node groups.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+            - Description: The head nodes in the cluster
+              Managed: true
+              Name: HeadNodes
+            - Description: The compute nodes in the cluster
+              Managed: true
+              Name: ComputeNodes
+            - Description: A newly created group
+              Managed: false
+              Name: New Group Name
+    post:
+      summary: Create a Node Group
+      description: Create a Node Group
+      operationId: createNodeGroup
+      parameters:
         - in: body
-          name: nodeNames
-          required: true
-          schema: 
+          name: nodeGroup
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return the newly created node group.
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+              Description: A newly created group
+              Managed: false
+              Name: New Group Name
+
+  /cluster/nodeGroups/{name}:
+    parameters:
+      - $ref: '#/parameters/asUser'  
+      - in: path
+        name: name
+        type: string
+        description: Node group name.
+        required: true
+        x-ms-parameter-location: method
+    get:
+      summary: Get Node Group
+      description: Get a node group by name.
+      operationId: getNodeGroup
+      responses:
+        200:
+          description: Return a node group.
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+              Description: A newly created group
+              Managed: false
+              Name: New Group Name
+    put:
+      summary: Update Node Group
+      description: Update a node group.
+      operationId: updateNodeGroup
+      parameters:
+        - in: body
+          name: nodeGroup
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          x-ms-parameter-location: method
+      responses:
+        200:
+          description: Return the updated node group.
+          schema:
+            $ref: '#/definitions/NodeGroup'
+          examples:
+            application/json:
+              Description: An updated node group
+              Managed: false
+              Name: Group Name
+    delete:
+      summary: Delete Node Group
+      description: Delete a node group.
+      operationId: deleteNodeGroup
+      responses:
+        204:
+          description: Return nothing.
+
+  /cluster/nodeGroups/{name}/nodes:
+    parameters:
+      - $ref: '#/parameters/asUser'  
+      - in: path
+        name: name
+        type: string
+        description: Node group name.
+        required: true
+        x-ms-parameter-location: method    
+    get:
+      summary: Get Nodes of a Group
+      description: Get the list of the nodes that belong to the specified node group.
+      operationId: getNodesOfGroup
+      responses:
+        200:
+          description: Return a list of names for nodes belonging to the group.
+          schema:
             type: array
             items:
               type: string
+          examples:
+            application/json:
+              - CN001
+              - CN002
+              - CN003
+    patch:
+      summary: Add/Remove Nodes to/from a Group
+      description: Add nodes to, or remove nodes from, a node group.
+      operationId: moveNodesOfGroup
+      parameters:
+        - in: body
+          name: operation
+          schema:
+            $ref: '#/definitions/NodeGroupOperation'
+          x-ms-parameter-location: method
       responses:
-        204:
-          description: OK
+        200:
+          description: |
+            Return a new list of names for nodes belonging to the group, after the movement.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            application/json:
+              - CN001
+              - CN002
+              - CN003
 
   /jobs:
     parameters:
@@ -268,6 +677,12 @@ paths:
       description: Gets all/filtered jobs for the HPC cluster.
       operationId: getJobs
       parameters:
+        - in: query
+          name: nodeNames
+          type: string
+          description: |
+            A comma-separated list of nodes names. It will list jobs running on these nodes. When this parameter is specified, all other parameters except the "x-ms-as-user" header are ignored. All properties of a jobs will be retrieved. An invalid name will be ignored.
+          x-ms-parameter-location: method   
         - in: query
           name: properties
           type: string
@@ -291,6 +706,8 @@ paths:
           description: A job property by which jobs will be sorted. If this parameter is not specified or a property with a specified name does not exist for a job, the result will be sorted by job Id.
           default: Id
           x-ms-parameter-location: method
+        - $ref: "#/parameters/sortOrder"
+        - $ref: "#/parameters/startRow"          
         - $ref: "#/parameters/rowsPerRead"
         - $ref: "#/parameters/queryId"
       responses:
@@ -615,6 +1032,8 @@ paths:
           description:  A task property by which tasks will be sorted. If this parameter is not specified or a property with a specified name does not exist for a task, the result will be sorted by task Id.
           default: TaskId
           x-ms-parameter-location: method
+        - $ref: "#/parameters/sortOrder"
+        - $ref: "#/parameters/startRow"          
         - $ref: "#/parameters/rowsPerRead"
         - $ref: "#/parameters/queryId"
       responses:
@@ -1009,6 +1428,14 @@ parameters:
     description: The name of user whom you want to make request as. You must be an HPC Pack administrator or HPC Pack Job administrator to make it work.
     x-ms-parameter-location: method
     
+  nodeName:
+    in: path
+    name: name
+    type: string
+    description: Node name
+    required: true
+    x-ms-parameter-location: method  
+    
   jobId:
     in: path
     name: jobId
@@ -1031,6 +1458,20 @@ parameters:
     type: integer
     description: Subtask Id
     required: true
+    x-ms-parameter-location: method
+
+  startRow:
+    in: query
+    name: startRow
+    type: number
+    description: Specifies the start number of rows to read. The number of the first row is 0. When this parameter presents, pagination is activated and _queryId_ is ignored. And the total number of rows will be returned in the response header _x-ms-row-count_, while no _x-ms-continuation-queryId_ will be returned.
+    x-ms-parameter-location: method
+    
+  sortOrder:
+    in: query
+    name: asc
+    type: boolean
+    description: Specifies the sort order.
     x-ms-parameter-location: method
 
   rowsPerRead:
@@ -1073,6 +1514,101 @@ definitions:
       Value:
         type: string
         
+  NodeServiceRole:
+    type: string
+    enum: [HeadNode, ComputeNode, BrokerNode, WorkstationNode, AzureWorkerNode, AzureVMNode, UnManagedResource, LinuxNode, AzureBatchNode, NonDomainComputeNode]
+    
+  NodeState:
+    type: string
+    enum: [Unknown, Provisioning, Offline, Starting, Online, Draining, Rejected, Removing, NotDeployed, Stopping]
+    
+  NodeHealth:
+    type: string
+    enum: [OK, Warning, Error, Transitional, Unapproved]
+    
+  NodeStatOfState:
+    type: array
+    items:
+      type: object
+      properties:
+        Name: 
+          $ref: '#/definitions/NodeState'
+        Value:
+          type: number
+
+  NodeStatOfHealth:
+    type: array
+    items:
+      type: object
+      properties:
+        Name:
+          $ref: '#/definitions/NodeHealth'
+        Value:
+          type: number
+
+  Node:
+    type: object
+    properties:
+      Name:
+        type: string
+      State:
+        $ref: '#/definitions/NodeState'
+      Health:
+        $ref: '#/definitions/NodeHealth'
+      Template:
+        type: string
+      Location:
+        type: string
+      MemorySize:
+        type: number
+      Cores:
+        type: number
+      Sockets:
+        type: number
+      HpcPackVersion:
+        type: string
+      OnAzure:
+        type: boolean
+      Groups:
+        type: array
+        items:
+          type: string
+      Roles:
+        type: array
+        items:
+          type: string
+      InstalledServiceRoles:
+        type: array
+        items:
+          $ref: '#/definitions/NodeServiceRole'
+      ActiveServiceRoles:
+        type: array
+        items:
+          $ref: '#/definitions/NodeServiceRole'
+
+  NodeGroup:
+    type: object
+    properties:
+      Name:
+        type: string
+      Description:
+        type: string
+      Managed:
+        type: boolean
+        
+  NodeGroupOperation:
+    type: object
+    properties:
+      GroupName:
+        type: string
+      Operation:
+        type: string
+        enum: [add, remove]
+      NodeNames:
+        type: array
+        items:
+          type: string
+
   NodeMetric:
     type: object
     properties:
@@ -1083,6 +1619,89 @@ definitions:
         additionalProperties:
           type: number
           format: double
+
+  MetricDefinition:
+    type: object
+    properties:
+      Name:
+        type: string
+      DisplayName:
+        type: string
+      Description:
+        type: string
+
+  MetricInstanceData:
+    type: object
+    properties:
+      InstanceName: 
+        type: string
+      Values:
+        type: array
+        items:
+          type: object
+          properties:
+            Key:
+              type: string
+            Value:
+              type: number
+              format: float
+
+  MetricData:
+    type: object
+    properties:
+      MetricName:
+        type: string
+      FromTime:
+        type: string
+        format: date-time
+      ToTime:
+        type: string
+        format: date-time
+      Instances:
+        type: array
+        items:
+          $ref: '#/definitions/MetricInstanceData'
+          
+  UserRole:
+    type: string
+    enum: [User, Administrator, JobAdministrator, JobOperator]
+    
+  OperationLogEntry:
+    type: object
+    properties:
+      Message:
+        type: string
+      Severity:
+        type: string
+        enum: [Error, Warning, Information, Trace]
+      Source:
+        type: string
+      CreateTime:
+        type: string
+        format: date-time
+
+  OperationLog:
+    type: object
+    properties:
+      Id:
+        type: string
+      Name:
+        type: string
+      State:
+        type: string
+      Operator:      
+        type: string
+      Node:
+        type: string
+      Cancelable:
+        type: boolean
+      UpdateTime:
+        type: string
+        format: date-time
+      Entries:
+        type: array
+        items:
+          $ref: '#/definitions/OperationLogEntry'
 
 securityDefinitions:
   basic:
