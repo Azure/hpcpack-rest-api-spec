@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
-  version: "2016-11-01.5.3"
-  title: HPC Pack REST API 2016
-  description: This is the API spec for Microsoft HPC Pack 2016 Update 3.
+  version: "2020-01-01.6.0"
+  title: HPC Pack REST API 2019
+  description: This is the API spec for Microsoft HPC Pack 2019.
   contact:
     email: hpcpack@microsoft.com
 
