@@ -45,6 +45,24 @@ paths:
             type: string
             example: "headnode"
             
+  /cluster/info:
+    get:
+      summary: Get Cluster Info
+      description: Get cluster info
+      operationId: getClusterInfo
+      parameters:
+        - $ref: '#/parameters/asUser'
+      responses:
+        200:
+          description: Return the cluster info.
+          schema:
+            $ref: '#/definitions/ClusterInfo'
+          examples:
+            application/json:
+              DeploymentId: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+              Location: southeastasia
+              SubscriptionId: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
   /cluster/info/dateTimeFormat:
     get:
       summary: Get DateTime Format
@@ -1498,6 +1516,16 @@ parameters:
     x-ms-parameter-location: method
 
 definitions:
+  ClusterInfo:
+    type: object
+    properties:
+      SubscriptionId:
+        type: string
+      DeploymentId:
+        type: string
+      Location:
+        type: string
+
   RestObject:
     type: object
     properties:
